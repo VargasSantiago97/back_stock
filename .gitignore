@@ -1,0 +1,63 @@
+# Node.js
+node_modules/
+logs/
+public/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Logs
+logs
+*.log
+pids
+*.pid
+*.seed
+*.pid.lock
+
+# Directorios de entornos
+.DS_Store
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Archivos temporales
+.tmp/
+.temp/
+.vscode/
+
+# Dependencias y build
+node_modules/
+jspm_packages/
+dist/
+build/
+
+# Cache
+.cache/
+.nyc_output/
+coverage/
+
+# IDEs y editores
+.idea/
+*.sublime-workspace
+*.sublime-project
+.vscode/
+*.swp
+*.swo
+
+# Sistema operativo
+Thumbs.db
+.DS_Store
+ehthumbs.db
+Icon?
+._*
+
+# Docker
+docker-compose.override.yml
+.dockerignore
+
+# Otros
+*.pem
+*.crt
+*.key

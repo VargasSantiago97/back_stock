@@ -1,0 +1,8 @@
+GET http://localhost:3000/version HTTP/1.1
+
+###
+POST http://localhost:3000/login HTTP/1.1
+
+###
+GET http://localhost:3000/users HTTP/1.1
+Authorization: BEARER eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOjExLCJuYW1lIjoiU2FudGlhZ28iLCJleHAiOjE3MjUxNTg0OTgwMTMsImlhdCI6MTcyNTE1NDg5OH0.IPBkjaVXkMq8BFwsibao1YfMAVLyq-62XFEcHC-c5M8
