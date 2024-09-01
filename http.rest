@@ -1,8 +1,59 @@
 GET http://localhost:3000/version HTTP/1.1
 
-###
+### GENERAR TOKEN
 POST http://localhost:3000/login HTTP/1.1
+Content-Type: application/json
 
-###
-GET http://localhost:3000/users HTTP/1.1
-Authorization: BEARER eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOjExLCJuYW1lIjoiU2FudGlhZ28iLCJleHAiOjE3MjUxNTg0OTgwMTMsImlhdCI6MTcyNTE1NDg5OH0.IPBkjaVXkMq8BFwsibao1YfMAVLyq-62XFEcHC-c5M8
+{
+    "user": "admin",
+    "password": "123456798"
+}
+
+###  OBTENER TODOS USERS
+GET http://localhost:3000/users
+Authorization: BEARER eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJkNzcwZmYxYy01NGNlLTRhOTQtOWY2ZC1jYzNiYTk4NTlkNzQiLCJkZXNjcmlwY2lvbiI6IkFkbWluaXN0cmFkb3IiLCJwZXJtaXNvcyI6IntcInVzZXJzXCI6e1widmVyXCI6dHJ1ZSxcImNyZWFyXCI6dHJ1ZSxcImVkaXRhclwiOmZhbHNlfX0iLCJleHAiOjE3MjUxOTU2NDQ1NjQsImlhdCI6MTcyNTE4MTI0NH0.ynNdmZQ3y2m8DpTX6JvOqD5sbKosc6igFq-GZG8lBMo
+
+### OBTENER UNO
+GET http://localhost:3000/users/d770ff1c-54ce-4a94-9f6d-cc3ba9859d74
+Authorization: BEARER eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJkNzcwZmYxYy01NGNlLTRhOTQtOWY2ZC1jYzNiYTk4NTlkNzQiLCJkZXNjcmlwY2lvbiI6IkFkbWluaXN0cmFkb3IiLCJwZXJtaXNvcyI6IntcInVzZXJzXCI6e1widmVyXCI6dHJ1ZSxcImNyZWFyXCI6dHJ1ZSxcImVkaXRhclwiOmZhbHNlfX0iLCJleHAiOjE3MjUxOTU2NDQ1NjQsImlhdCI6MTcyNTE4MTI0NH0.ynNdmZQ3y2m8DpTX6JvOqD5sbKosc6igFq-GZG8lBMo
+
+### CREAR NUEVO
+POST http://localhost:3000/users
+Content-Type: application/json
+Authorization: BEARER eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJkNzcwZmYxYy01NGNlLTRhOTQtOWY2ZC1jYzNiYTk4NTlkNzQiLCJkZXNjcmlwY2lvbiI6IkFkbWluaXN0cmFkb3IiLCJwZXJtaXNvcyI6IntcInVzZXJzXCI6e1widmVyXCI6dHJ1ZSxcImNyZWFyXCI6dHJ1ZSxcImVkaXRhclwiOmZhbHNlfX0iLCJleHAiOjE3MjUxOTU2NDQ1NjQsImlhdCI6MTcyNTE4MTI0NH0.ynNdmZQ3y2m8DpTX6JvOqD5sbKosc6igFq-GZG8lBMo
+
+{
+    "alias": "admin",
+    "descripcion": "Administrador",
+    "password": "123456798",
+    "email": "",
+    "imagen": "",
+    "datos": "{}",
+    "permisos": "{}"
+}
+
+### EDITAR
+PUT http://localhost:3000/users/d770ff1c-54ce-4a94-9f6d-cc3ba9859d74 HTTP/1.1
+Content-Type: application/json
+Authorization: BEARER eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJkNzcwZmYxYy01NGNlLTRhOTQtOWY2ZC1jYzNiYTk4NTlkNzQiLCJkZXNjcmlwY2lvbiI6IkFkbWluaXN0cmFkb3IiLCJwZXJtaXNvcyI6IntcInVzZXJzXCI6e1widmVyXCI6dHJ1ZSxcImNyZWFyXCI6dHJ1ZSxcImVkaXRhclwiOmZhbHNlfX0iLCJleHAiOjE3MjUxOTU2NDQ1NjQsImlhdCI6MTcyNTE4MTI0NH0.ynNdmZQ3y2m8DpTX6JvOqD5sbKosc6igFq-GZG8lBMo
+
+{
+    "id": "d770ff1c-54ce-4a94-9f6d-cc3ba9859d74",
+    "alias": "admin",
+    "descripcion": "Administrador",
+    "password": "$2b$10$zBdBbbf/jAe8bgJDuYOMauOVKNomHd5t7L9gY3ptt08XqgZzqKjaO",
+    "email": "",
+    "imagen": "",
+    "datos": {},
+    "permisos": {
+        "users": {
+            "ver": true,
+            "crear": true,
+            "editar": false
+        }
+    }
+}
+
+### ELIMINAR UNO
+DELETE http://localhost:3000/users/bcb315af-fb1c-40c2-aa1d-1461146e236c
+Authorization: BEARER eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJkNzcwZmYxYy01NGNlLTRhOTQtOWY2ZC1jYzNiYTk4NTlkNzQiLCJkZXNjcmlwY2lvbiI6IkFkbWluaXN0cmFkb3IiLCJwZXJtaXNvcyI6IntcInVzZXJzXCI6e1widmVyXCI6dHJ1ZSxcImNyZWFyXCI6dHJ1ZSxcImVkaXRhclwiOmZhbHNlfX0iLCJleHAiOjE3MjUxOTU2NDQ1NjQsImlhdCI6MTcyNTE4MTI0NH0.ynNdmZQ3y2m8DpTX6JvOqD5sbKosc6igFq-GZG8lBMo
