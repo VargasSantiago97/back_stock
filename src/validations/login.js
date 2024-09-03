@@ -19,6 +19,8 @@ router.post('/', async (req, res) => {
             }
         })
 
+        console.log(secret)
+
         if(!user){
             return res.status(400).json({
                 ok: false,
@@ -28,6 +30,7 @@ router.post('/', async (req, res) => {
         }
 
         const ok_pass = await bcrypt.compare(data.password, user.password);
+
 
         if(!ok_pass){
             return res.status(400).json({

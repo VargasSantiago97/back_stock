@@ -1,6 +1,5 @@
 const express = require('express');
 const router = express.Router();
-const bcrypt = require('bcrypt');
 
 const log = require('electron-log');
 const path = require('path');
@@ -18,23 +17,30 @@ function fechaHoy() {
     return `${anio}-${mes}-${dia}`;
 }
 
-const User = require('./../model/users');
+const Cliente = require('../model/clientes.model');
 
 router.get('/', async (req, res) => {
-    log.info('GET all users')
-
+    log.info('GET all clientes')
 
     try {
-        const userss = await User.findAll()
+        const resultado = await Cliente.findAll()
 
-        const users = userss.map((e) => {
-            e.datos = JSON.parse(e.datos)
-            return e
-        })
+        const clientes = resultado.map(cliente => {
+            let datosConvertidos;
+            try {
+                datosConvertidos = JSON.parse(cliente.dataValues.datos);
+            } catch (error) {
+                datosConvertidos = {}; // Devuelve un objeto vacío en caso de error
+            }
+            return {
+                ...cliente.dataValues,
+                datos: datosConvertidos
+            };
+        });
 
         res.status(200).json({
             ok: true,
-            mensaje: users
+            mensaje: clientes
         })
     }
     catch (err) {
@@ -47,19 +53,29 @@ router.get('/', async (req, res) => {
 });
 
 router.get('/:id', async (req, res) => {
-    log.info('GET one users')
+    log.info('GET one cliente')
     const id = req.params.id
 
     try {
-        const user = await User.findOne({
+        const cliente = await Cliente.findOne({
             where: {
                 id: id
             }
         })
 
+        let datosConvertidos;
+        try {
+            datosConvertidos = JSON.parse(cliente.datos);
+        } catch (error) {
+            datosConvertidos = {};
+        }
+
         res.status(200).json({
             ok: true,
-            mensaje: user
+            mensaje: {
+                ...cliente.dataValues,
+                datos: datosConvertidos
+            }
         })
     }
     catch (err) {
@@ -73,26 +89,28 @@ router.get('/:id', async (req, res) => {
 
 router.post('/', async (req, res) => {
 
-    await User.sync();
-    const dataUser = req.body
+    await Cliente.sync();
+    const dataBody = req.body
 
     try {
-        const hashedPassword = await bcrypt.hash(dataUser.password, 10);
-
-        const createUser = await User.create({
-            alias: dataUser.alias,
-            descripcion: dataUser.descripcion,
-            password: hashedPassword,
-            email: dataUser.email,
-            imagen: dataUser.imagen,
-            datos: dataUser.datos,
-            permisos: dataUser.permisos
+        const createCliente = await Cliente.create({
+            cuit: dataBody.cuit,
+            razon_social: dataBody.razon_social,
+            alias: dataBody.alias,
+            direccion: dataBody.direccion,
+            localidad: dataBody.localidad,
+            provincia: dataBody.provincia,
+            codigo_postal: dataBody.codigo_postal,
+            datos: dataBody.datos,
+            estado: dataBody.estado,
+            createdBy: dataBody.createdBy,
+            updatedBy: dataBody.updatedBy,
         })
 
         res.status(201).json({
             ok: true,
-            mensaje: 'Usuario creado',
-            id: createUser.id
+            mensaje: 'Cliente creado',
+            id: createCliente.id
         })
     }
     catch (err) {
@@ -106,7 +124,7 @@ router.post('/', async (req, res) => {
 });
 
 router.put('/:id', async (req, res) => {
-    log.info('PUT user')
+    log.info('PUT cliente')
 
     const id = req.params.id
     const dataUser = req.body
@@ -114,7 +132,7 @@ router.put('/:id', async (req, res) => {
     console.log(dataUser)
 
     try {
-        const updateUser = await User.update({
+        const updateUser = await Cliente.update({
             alias: dataUser.alias,
             descripcion: dataUser.descripcion,
             password: dataUser.password,
@@ -149,12 +167,12 @@ router.delete('/:id', async (req, res) => {
     const id = req.params.id
 
     try {
-        const user = await User.destroy({
+        const user = await Cliente.destroy({
             where: {
                 id: id,
             },
         });
-    
+
         res.status(200).json({
             ok: true,
             mensaje: 'Usuario eliminado',

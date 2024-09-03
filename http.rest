@@ -11,16 +11,16 @@ Content-Type: application/json
 
 ###  OBTENER TODOS USERS
 GET http://localhost:3000/users
-Authorization: BEARER eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJkNzcwZmYxYy01NGNlLTRhOTQtOWY2ZC1jYzNiYTk4NTlkNzQiLCJkZXNjcmlwY2lvbiI6IkFkbWluaXN0cmFkb3IiLCJwZXJtaXNvcyI6IntcInVzZXJzXCI6e1widmVyXCI6dHJ1ZSxcImNyZWFyXCI6dHJ1ZSxcImVkaXRhclwiOmZhbHNlfX0iLCJleHAiOjE3MjUxOTU2NDQ1NjQsImlhdCI6MTcyNTE4MTI0NH0.ynNdmZQ3y2m8DpTX6JvOqD5sbKosc6igFq-GZG8lBMo
+Authorization: BEARER eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIyZDljODNjZS1jYzM0LTQ2ZDgtOGZlOC1iOTUxZjJjMmIzZmUiLCJkZXNjcmlwY2lvbiI6IkFkbWluaXN0cmFkb3IiLCJwZXJtaXNvcyI6IntcInVzZXJzXCI6e1widmVyXCI6dHJ1ZSxcImNyZWFyXCI6dHJ1ZSxcImVkaXRhclwiOnRydWV9fSIsImV4cCI6MTcyNTQwMzIwMzIzOCwiaWF0IjoxNzI1Mzg4ODAzfQ.LCdLWkx8LIx_sffP9669RfoV4bqQFag8-KRjohPBmis
 
 ### OBTENER UNO
-GET http://localhost:3000/users/d770ff1c-54ce-4a94-9f6d-cc3ba9859d74
-Authorization: BEARER eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJkNzcwZmYxYy01NGNlLTRhOTQtOWY2ZC1jYzNiYTk4NTlkNzQiLCJkZXNjcmlwY2lvbiI6IkFkbWluaXN0cmFkb3IiLCJwZXJtaXNvcyI6IntcInVzZXJzXCI6e1widmVyXCI6dHJ1ZSxcImNyZWFyXCI6dHJ1ZSxcImVkaXRhclwiOmZhbHNlfX0iLCJleHAiOjE3MjUxOTU2NDQ1NjQsImlhdCI6MTcyNTE4MTI0NH0.ynNdmZQ3y2m8DpTX6JvOqD5sbKosc6igFq-GZG8lBMo
+GET http://localhost:3000/users/fdfd50ca-bdca-4393-8a48-739aa9aa9638
+Authorization: BEARER eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIyZDljODNjZS1jYzM0LTQ2ZDgtOGZlOC1iOTUxZjJjMmIzZmUiLCJkZXNjcmlwY2lvbiI6IkFkbWluaXN0cmFkb3IiLCJwZXJtaXNvcyI6IntcInVzZXJzXCI6e1widmVyXCI6dHJ1ZSxcImNyZWFyXCI6dHJ1ZSxcImVkaXRhclwiOnRydWV9fSIsImV4cCI6MTcyNTQwMzIwMzIzOCwiaWF0IjoxNzI1Mzg4ODAzfQ.LCdLWkx8LIx_sffP9669RfoV4bqQFag8-KRjohPBmis
 
 ### CREAR NUEVO
 POST http://localhost:3000/users
 Content-Type: application/json
-Authorization: BEARER eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJkNzcwZmYxYy01NGNlLTRhOTQtOWY2ZC1jYzNiYTk4NTlkNzQiLCJkZXNjcmlwY2lvbiI6IkFkbWluaXN0cmFkb3IiLCJwZXJtaXNvcyI6IntcInVzZXJzXCI6e1widmVyXCI6dHJ1ZSxcImNyZWFyXCI6dHJ1ZSxcImVkaXRhclwiOmZhbHNlfX0iLCJleHAiOjE3MjUxOTU2NDQ1NjQsImlhdCI6MTcyNTE4MTI0NH0.ynNdmZQ3y2m8DpTX6JvOqD5sbKosc6igFq-GZG8lBMo
+Authorization: BEARER eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIyZDljODNjZS1jYzM0LTQ2ZDgtOGZlOC1iOTUxZjJjMmIzZmUiLCJkZXNjcmlwY2lvbiI6IkFkbWluaXN0cmFkb3IiLCJwZXJtaXNvcyI6IntcInVzZXJzXCI6e1widmVyXCI6dHJ1ZSxcImNyZWFyXCI6dHJ1ZSxcImVkaXRhclwiOnRydWV9fSIsImV4cCI6MTcyNTQwMzIwMzIzOCwiaWF0IjoxNzI1Mzg4ODAzfQ.LCdLWkx8LIx_sffP9669RfoV4bqQFag8-KRjohPBmis
 
 {
     "alias": "admin",
@@ -28,21 +28,25 @@ Authorization: BEARER eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJkNzcwZmYxY
     "password": "123456798",
     "email": "",
     "imagen": "",
-    "datos": "{}",
-    "permisos": "{}"
+    "datos": {},
+    "permisos": {
+        "users": {
+            "ver": true,
+            "crear": true,
+            "editar": true
+        }
+    }
 }
 
 ### EDITAR
-PUT http://localhost:3000/users/d770ff1c-54ce-4a94-9f6d-cc3ba9859d74 HTTP/1.1
+PUT http://localhost:3000/users/fdfd50ca-bdca-4393-8a48-739aa9aa9638 HTTP/1.1
 Content-Type: application/json
-Authorization: BEARER eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJkNzcwZmYxYy01NGNlLTRhOTQtOWY2ZC1jYzNiYTk4NTlkNzQiLCJkZXNjcmlwY2lvbiI6IkFkbWluaXN0cmFkb3IiLCJwZXJtaXNvcyI6IntcInVzZXJzXCI6e1widmVyXCI6dHJ1ZSxcImNyZWFyXCI6dHJ1ZSxcImVkaXRhclwiOmZhbHNlfX0iLCJleHAiOjE3MjUxOTU2NDQ1NjQsImlhdCI6MTcyNTE4MTI0NH0.ynNdmZQ3y2m8DpTX6JvOqD5sbKosc6igFq-GZG8lBMo
+Authorization: BEARER eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIyZDljODNjZS1jYzM0LTQ2ZDgtOGZlOC1iOTUxZjJjMmIzZmUiLCJkZXNjcmlwY2lvbiI6IkFkbWluaXN0cmFkb3IiLCJwZXJtaXNvcyI6IntcInVzZXJzXCI6e1widmVyXCI6dHJ1ZSxcImNyZWFyXCI6dHJ1ZSxcImVkaXRhclwiOnRydWV9fSIsImV4cCI6MTcyNTQwMzIwMzIzOCwiaWF0IjoxNzI1Mzg4ODAzfQ.LCdLWkx8LIx_sffP9669RfoV4bqQFag8-KRjohPBmis
 
 {
-    "id": "d770ff1c-54ce-4a94-9f6d-cc3ba9859d74",
     "alias": "admin",
     "descripcion": "Administrador",
-    "password": "$2b$10$zBdBbbf/jAe8bgJDuYOMauOVKNomHd5t7L9gY3ptt08XqgZzqKjaO",
-    "email": "",
+    "password": "$2b$10$LbF/N858Fbqxl.APGhaOvOWkelGnC2Fz65CtILChWxOxQ6LRPizZq",    "email": "",
     "imagen": "",
     "datos": {},
     "permisos": {
@@ -55,5 +59,55 @@ Authorization: BEARER eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJkNzcwZmYxY
 }
 
 ### ELIMINAR UNO
-DELETE http://localhost:3000/users/bcb315af-fb1c-40c2-aa1d-1461146e236c
-Authorization: BEARER eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJkNzcwZmYxYy01NGNlLTRhOTQtOWY2ZC1jYzNiYTk4NTlkNzQiLCJkZXNjcmlwY2lvbiI6IkFkbWluaXN0cmFkb3IiLCJwZXJtaXNvcyI6IntcInVzZXJzXCI6e1widmVyXCI6dHJ1ZSxcImNyZWFyXCI6dHJ1ZSxcImVkaXRhclwiOmZhbHNlfX0iLCJleHAiOjE3MjUxOTU2NDQ1NjQsImlhdCI6MTcyNTE4MTI0NH0.ynNdmZQ3y2m8DpTX6JvOqD5sbKosc6igFq-GZG8lBMo
+DELETE http://localhost:3000/users/c48dd867-a86b-40e7-a04a-2a8e37dc64e5
+Authorization: BEARER eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIyZDljODNjZS1jYzM0LTQ2ZDgtOGZlOC1iOTUxZjJjMmIzZmUiLCJkZXNjcmlwY2lvbiI6IkFkbWluaXN0cmFkb3IiLCJwZXJtaXNvcyI6IntcInVzZXJzXCI6e1widmVyXCI6dHJ1ZSxcImNyZWFyXCI6dHJ1ZSxcImVkaXRhclwiOnRydWV9fSIsImV4cCI6MTcyNTQwMzIwMzIzOCwiaWF0IjoxNzI1Mzg4ODAzfQ.LCdLWkx8LIx_sffP9669RfoV4bqQFag8-KRjohPBmis
+
+
+
+
+###  CLIENTES - OBTENER TODOS
+GET http://localhost:3000/clientes
+Authorization: BEARER eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIyZDljODNjZS1jYzM0LTQ2ZDgtOGZlOC1iOTUxZjJjMmIzZmUiLCJkZXNjcmlwY2lvbiI6IkFkbWluaXN0cmFkb3IiLCJwZXJtaXNvcyI6IntcInVzZXJzXCI6e1widmVyXCI6dHJ1ZSxcImNyZWFyXCI6dHJ1ZSxcImVkaXRhclwiOnRydWV9fSIsImV4cCI6MTcyNTQwMzIwMzIzOCwiaWF0IjoxNzI1Mzg4ODAzfQ.LCdLWkx8LIx_sffP9669RfoV4bqQFag8-KRjohPBmis
+
+###  CLIENTE - OBTENER
+GET http://localhost:3000/clientes/bf59d0c1-f9d5-48cc-bd67-ce6f329414bb
+Authorization: BEARER eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIyZDljODNjZS1jYzM0LTQ2ZDgtOGZlOC1iOTUxZjJjMmIzZmUiLCJkZXNjcmlwY2lvbiI6IkFkbWluaXN0cmFkb3IiLCJwZXJtaXNvcyI6IntcInVzZXJzXCI6e1widmVyXCI6dHJ1ZSxcImNyZWFyXCI6dHJ1ZSxcImVkaXRhclwiOnRydWV9fSIsImV4cCI6MTcyNTQwMzIwMzIzOCwiaWF0IjoxNzI1Mzg4ODAzfQ.LCdLWkx8LIx_sffP9669RfoV4bqQFag8-KRjohPBmis
+
+### Crear cliente
+POST http://localhost:3000/clientes
+Content-Type: application/json
+Authorization: BEARER eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIyZDljODNjZS1jYzM0LTQ2ZDgtOGZlOC1iOTUxZjJjMmIzZmUiLCJkZXNjcmlwY2lvbiI6IkFkbWluaXN0cmFkb3IiLCJwZXJtaXNvcyI6IntcInVzZXJzXCI6e1widmVyXCI6dHJ1ZSxcImNyZWFyXCI6dHJ1ZSxcImVkaXRhclwiOnRydWV9fSIsImV4cCI6MTcyNTQwMzIwMzIzOCwiaWF0IjoxNzI1Mzg4ODAzfQ.LCdLWkx8LIx_sffP9669RfoV4bqQFag8-KRjohPBmis
+
+{
+    "cuit" : 20405003644,
+    "razon_social" : "VARGAS SANTIAGO MANUEL",
+    "alias" : "SANTY",
+    "direccion" : "HIPOLITO IRIGOYEN 900",
+    "localidad" : "PAMPA DEL INFIERNO",
+    "provincia" : "CHACO",
+    "codigo_postal" : "3721",
+    "datos" : {},
+    "estado" : 1,
+    "createdBy" : "2d9c83ce-cc34-46d8-8fe8-b951f2c2b3fe",
+    "updatedBy" : "2d9c83ce-cc34-46d8-8fe8-b951f2c2b3fe"
+}
+
+### Editar cliente
+PUT http://localhost:3000/clientes/bf59d0c1-f9d5-48cc-bd67-ce6f329414bb
+Content-Type: application/json
+Authorization: BEARER eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIyZDljODNjZS1jYzM0LTQ2ZDgtOGZlOC1iOTUxZjJjMmIzZmUiLCJkZXNjcmlwY2lvbiI6IkFkbWluaXN0cmFkb3IiLCJwZXJtaXNvcyI6IntcInVzZXJzXCI6e1widmVyXCI6dHJ1ZSxcImNyZWFyXCI6dHJ1ZSxcImVkaXRhclwiOnRydWV9fSIsImV4cCI6MTcyNTQwMzIwMzIzOCwiaWF0IjoxNzI1Mzg4ODAzfQ.LCdLWkx8LIx_sffP9669RfoV4bqQFag8-KRjohPBmis
+
+{
+    "cuit" : 30715327720,
+    "razon_social" : "YAGUA COLI S.A.",
+    "alias" : "YAGUA",
+    "direccion" : "1",
+    "localidad" : "",
+    "provincia" : "",
+    "codigo_postal" : "",
+    "datos" : {},
+    "estado" : 1,
+    "createdBy" : "2d9c83ce-cc34-46d8-8fe8-b951f2c2b3fe",
+    "updatedBy" : "2d9c83ce-cc34-46d8-8fe8-b951f2c2b3fe"
+}
+
