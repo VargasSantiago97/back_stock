@@ -17,34 +17,34 @@ function fechaHoy() {
     return `${anio}-${mes}-${dia}`;
 }
 
-const Cliente = require('../model/clientes.model');
+const Subrubro = require('../model/subrubros.model');
 
 router.get('/', async (req, res) => {
-    log.info('GET all clientes')
+    log.info('GET all Subrubros')
 
     try {
-        const resultado = await Cliente.findAll({
+        const resultado = await Subrubro.findAll({
             where: {
                 estado: 1
             }
         })
 
-        const clientes = resultado.map(cliente => {
+        const subrubros = resultado.map(subrubro => {
             let datosConvertidos;
             try {
-                datosConvertidos = JSON.parse(cliente.dataValues.datos);
+                datosConvertidos = JSON.parse(subrubro.dataValues.datos);
             } catch (error) {
-                datosConvertidos = {}; // Devuelve un objeto vacío en caso de error
+                datosConvertidos = {};
             }
             return {
-                ...cliente.dataValues,
+                ...subrubro.dataValues,
                 datos: datosConvertidos
             };
         });
 
         res.status(200).json({
             ok: true,
-            mensaje: clientes
+            mensaje: subrubros
         })
     }
     catch (err) {
@@ -57,29 +57,33 @@ router.get('/', async (req, res) => {
 });
 
 router.get('/:id', async (req, res) => {
-    log.info('GET one cliente')
+    log.info('GET one subrubro de rubros')
     const id = req.params.id
 
     try {
-        const cliente = await Cliente.findOne({
+        const resultado = await Subrubro.findAll({
             where: {
-                id: id
+                estado: 1,
+                id_rubro: id
             }
         })
 
-        let datosConvertidos;
-        try {
-            datosConvertidos = JSON.parse(cliente.datos);
-        } catch (error) {
-            datosConvertidos = {};
-        }
+        const subrubros = resultado.map(subrubro => {
+            let datosConvertidos;
+            try {
+                datosConvertidos = JSON.parse(subrubro.dataValues.datos);
+            } catch (error) {
+                datosConvertidos = {};
+            }
+            return {
+                ...subrubro.dataValues,
+                datos: datosConvertidos
+            };
+        });
 
         res.status(200).json({
             ok: true,
-            mensaje: {
-                ...cliente.dataValues,
-                datos: datosConvertidos
-            }
+            mensaje: subrubros
         })
     }
     catch (err) {
@@ -93,31 +97,24 @@ router.get('/:id', async (req, res) => {
 
 router.post('/', async (req, res) => {
 
-    await Cliente.sync();
+    await Subrubro.sync();
     const dataBody = req.body
 
     try {
-        const createCliente = await Cliente.create({
-            cuit: dataBody.cuit,
-            codigo: dataBody.codigo,
-            razon_social: dataBody.razon_social,
+        const createSubrubro = await Subrubro.create({
+            id_rubro: dataBody.id_rubro,
+            descripcion: dataBody.descripcion,
             alias: dataBody.alias,
-            direccion: dataBody.direccion,
-            localidad: dataBody.localidad,
-            provincia: dataBody.provincia,
-            codigo_postal: dataBody.codigo_postal,
-            telefono: dataBody.telefono,
-            correo: dataBody.correo,
             datos: dataBody.datos,
             estado: dataBody.estado,
             createdBy: dataBody.createdBy,
-            updatedBy: dataBody.updatedBy,
+            updatedBy: dataBody.updatedBy
         })
 
         res.status(201).json({
             ok: true,
-            mensaje: createCliente.id,
-            id: createCliente.id
+            mensaje: createSubrubro.id,
+            id: createSubrubro.id
         })
     }
     catch (err) {
@@ -131,27 +128,20 @@ router.post('/', async (req, res) => {
 });
 
 router.put('/:id', async (req, res) => {
-    log.info('PUT cliente')
+    log.info('PUT subrubro')
 
     const id = req.params.id
-    const data = req.body
+    const dataBody = req.body
 
     try {
-        const updateCliente = await Cliente.update({
-            cuit: data.cuit,
-            codigo: data.codigo,
-            razon_social: data.razon_social,
-            alias: data.alias,
-            direccion: data.direccion,
-            localidad: data.localidad,
-            provincia: data.provincia,
-            codigo_postal: data.codigo_postal,
-            telefono: data.telefono,
-            correo: data.correo,
-            datos: data.datos,
-            estado: data.estado,
-            createdBy: data.createdBy,
-            updatedBy: data.updatedBy
+        const updateSubrubro = await Subrubro.update({
+            id_rubro: dataBody.id_rubro,
+            descripcion: dataBody.descripcion,
+            alias: dataBody.alias,
+            datos: dataBody.datos,
+            estado: dataBody.estado,
+            createdBy: dataBody.createdBy,
+            updatedBy: dataBody.updatedBy
         },
             {
                 where: {
@@ -161,8 +151,8 @@ router.put('/:id', async (req, res) => {
 
         res.status(202).json({
             ok: true,
-            mensaje: updateCliente,
-            id: updateCliente
+            mensaje: updateSubrubro,
+            id: updateSubrubro
         })
     }
     catch (err) {
@@ -180,19 +170,19 @@ router.delete('/:id', async (req, res) => {
     const id = req.params.id
 
     try {
-        const updateCliente = await Cliente.update({
+        const updateSubrubro = await Subrubro.update({
             estado: 0
         },
-        {
-            where: {
-                id: id
-            }
-        })
+            {
+                where: {
+                    id: id
+                }
+            })
 
         res.status(202).json({
             ok: true,
-            mensaje: updateCliente,
-            id: updateCliente
+            mensaje: updateSubrubro,
+            id: updateSubrubro
         })
     }
     catch (err) {

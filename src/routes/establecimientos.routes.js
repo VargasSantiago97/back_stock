@@ -17,34 +17,34 @@ function fechaHoy() {
     return `${anio}-${mes}-${dia}`;
 }
 
-const Cliente = require('../model/clientes.model');
+const Establecimiento = require('../model/establecimientos.model');
 
 router.get('/', async (req, res) => {
-    log.info('GET all clientes')
+    log.info('GET all Establecimiento')
 
     try {
-        const resultado = await Cliente.findAll({
+        const resultado = await Establecimiento.findAll({
             where: {
                 estado: 1
             }
         })
 
-        const clientes = resultado.map(cliente => {
+        const establecimientos = resultado.map(establecimiento => {
             let datosConvertidos;
             try {
-                datosConvertidos = JSON.parse(cliente.dataValues.datos);
+                datosConvertidos = JSON.parse(establecimiento.dataValues.datos);
             } catch (error) {
                 datosConvertidos = {}; // Devuelve un objeto vacío en caso de error
             }
             return {
-                ...cliente.dataValues,
+                ...establecimiento.dataValues,
                 datos: datosConvertidos
             };
         });
 
         res.status(200).json({
             ok: true,
-            mensaje: clientes
+            mensaje: establecimientos
         })
     }
     catch (err) {
@@ -57,29 +57,33 @@ router.get('/', async (req, res) => {
 });
 
 router.get('/:id', async (req, res) => {
-    log.info('GET one cliente')
+    log.info('GET one Establecimiento')
     const id = req.params.id
 
     try {
-        const cliente = await Cliente.findOne({
+        const resultado = await Establecimiento.findAll({
             where: {
-                id: id
+                id_cliente: id,
+                estado: 1
             }
         })
 
-        let datosConvertidos;
-        try {
-            datosConvertidos = JSON.parse(cliente.datos);
-        } catch (error) {
-            datosConvertidos = {};
-        }
+        const establecimientos = resultado.map(establecimiento => {
+            let datosConvertidos;
+            try {
+                datosConvertidos = JSON.parse(establecimiento.dataValues.datos);
+            } catch (error) {
+                datosConvertidos = {}; // Devuelve un objeto vacío en caso de error
+            }
+            return {
+                ...establecimiento.dataValues,
+                datos: datosConvertidos
+            };
+        });
 
         res.status(200).json({
             ok: true,
-            mensaje: {
-                ...cliente.dataValues,
-                datos: datosConvertidos
-            }
+            mensaje: establecimientos
         })
     }
     catch (err) {
@@ -93,31 +97,25 @@ router.get('/:id', async (req, res) => {
 
 router.post('/', async (req, res) => {
 
-    await Cliente.sync();
+    await Establecimiento.sync();
     const dataBody = req.body
 
     try {
-        const createCliente = await Cliente.create({
-            cuit: dataBody.cuit,
-            codigo: dataBody.codigo,
-            razon_social: dataBody.razon_social,
-            alias: dataBody.alias,
-            direccion: dataBody.direccion,
+        const createEstablecimiento = await Establecimiento.create({
+            id_cliente: dataBody.id_cliente,
+            descripcion: dataBody.descripcion,
             localidad: dataBody.localidad,
             provincia: dataBody.provincia,
-            codigo_postal: dataBody.codigo_postal,
-            telefono: dataBody.telefono,
-            correo: dataBody.correo,
             datos: dataBody.datos,
             estado: dataBody.estado,
             createdBy: dataBody.createdBy,
-            updatedBy: dataBody.updatedBy,
+            updatedBy: dataBody.updatedBy
         })
 
         res.status(201).json({
             ok: true,
-            mensaje: createCliente.id,
-            id: createCliente.id
+            mensaje: createEstablecimiento.id,
+            id: createEstablecimiento.id
         })
     }
     catch (err) {
@@ -131,23 +129,17 @@ router.post('/', async (req, res) => {
 });
 
 router.put('/:id', async (req, res) => {
-    log.info('PUT cliente')
+    log.info('PUT Establecimiento')
 
     const id = req.params.id
     const data = req.body
 
     try {
-        const updateCliente = await Cliente.update({
-            cuit: data.cuit,
-            codigo: data.codigo,
-            razon_social: data.razon_social,
-            alias: data.alias,
-            direccion: data.direccion,
+        const updateEstablecimiento = await Establecimiento.update({
+            id_cliente: data.id_cliente,
+            descripcion: data.descripcion,
             localidad: data.localidad,
             provincia: data.provincia,
-            codigo_postal: data.codigo_postal,
-            telefono: data.telefono,
-            correo: data.correo,
             datos: data.datos,
             estado: data.estado,
             createdBy: data.createdBy,
@@ -161,8 +153,8 @@ router.put('/:id', async (req, res) => {
 
         res.status(202).json({
             ok: true,
-            mensaje: updateCliente,
-            id: updateCliente
+            mensaje: updateEstablecimiento,
+            id: updateEstablecimiento
         })
     }
     catch (err) {
@@ -180,19 +172,19 @@ router.delete('/:id', async (req, res) => {
     const id = req.params.id
 
     try {
-        const updateCliente = await Cliente.update({
+        const updateEstablecimiento = await Establecimiento.update({
             estado: 0
         },
-        {
-            where: {
-                id: id
-            }
-        })
+            {
+                where: {
+                    id: id
+                }
+            })
 
         res.status(202).json({
             ok: true,
-            mensaje: updateCliente,
-            id: updateCliente
+            mensaje: updateEstablecimiento,
+            id: updateEstablecimiento
         })
     }
     catch (err) {

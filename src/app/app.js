@@ -11,8 +11,12 @@ app.use(cors({
 app.use(express.json());
 
 const users = require('./../routes/users');
-
 const clientes = require('./../routes/clientes.routes');
+const autorizados = require('./../routes/autorizados.routes');
+const transportes = require('./../routes/transportes.routes');
+const establecimientos = require('./../routes/establecimientos.routes');
+const rubros = require('./../routes/rubros.routes');
+const subrubros = require('./../routes/subrubros.routes');
 
 
 const login = require('./../validations/login');
@@ -22,7 +26,13 @@ const usersVerifyToken = require('../validations/users.validation');
 app.use(express.static(path.join(__dirname, '../public')));
 app.use('/login', login);
 app.use('/users', usersVerifyToken, users);
+
 app.use('/clientes', usersVerifyToken, clientes);
+app.use('/autorizados', usersVerifyToken, autorizados);
+app.use('/transportes', usersVerifyToken, transportes);
+app.use('/establecimientos', usersVerifyToken, establecimientos);
+app.use('/rubros', usersVerifyToken, rubros);
+app.use('/subrubros', usersVerifyToken, subrubros);
 
 
 app.get('/version', (req, res) => {

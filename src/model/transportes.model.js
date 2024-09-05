@@ -6,54 +6,44 @@ const sequelize = new Sequelize('stock', 'root', '', {
     port: 3306
 })
 
-class Cliente extends Model {}
+class Transporte extends Model {}
 
-Cliente.init({
+Transporte.init({
     id: {
         type: DataTypes.UUID,
         defaultValue: DataTypes.UUIDV4,
         primaryKey: true
     },
-    cuit: {
+    id_cliente: {
+        type: DataTypes.STRING,
+        allowNull: false
+    },
+    transporte: {
+        type: DataTypes.STRING,
+        allowNull: false
+    },
+    cuit_transporte: {
         type: DataTypes.BIGINT,
         allowNull: true
     },
-    codigo: {
-        type: DataTypes.STRING,
-        allowNull: false
-    },
-    razon_social: {
-        type: DataTypes.STRING,
-        allowNull: false
-    },
-    alias: {
+    chofer: {
         type: DataTypes.STRING,
         allowNull: true
     },
-    direccion: {
+    cuit_chofer: {
+        type: DataTypes.BIGINT,
+        allowNull: true
+    },
+    patente_chasis: {
         type: DataTypes.STRING,
         allowNull: true
     },
-    localidad: {
+    patente_acoplado: {
         type: DataTypes.STRING,
         allowNull: true
     },
-    provincia: {
-        type: DataTypes.STRING,
-        allowNull: true
-    },
-    codigo_postal: {
-        type: DataTypes.STRING,
-        allowNull: true
-    },
-    telefono: {
-        type: DataTypes.STRING,
-        allowNull: true
-    },
-    correo: {
-        type: DataTypes.STRING,
-        allowNull: true
-    },
+
+
     datos: {
         type: DataTypes.JSON
     },
@@ -68,7 +58,7 @@ Cliente.init({
     }
 }, {
     sequelize,
-    modelName: 'Cliente'
+    modelName: 'Transporte'
 })
 
-module.exports = Cliente
+module.exports = Transporte
