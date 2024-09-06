@@ -17,6 +17,8 @@ const transportes = require('./../routes/transportes.routes');
 const establecimientos = require('./../routes/establecimientos.routes');
 const rubros = require('./../routes/rubros.routes');
 const subrubros = require('./../routes/subrubros.routes');
+const laboratorios = require('./../routes/laboratorios.routes');
+const unidadMedidas = require('./../routes/unidadMedidas.routes');
 
 
 const login = require('./../validations/login');
@@ -33,6 +35,9 @@ app.use('/transportes', usersVerifyToken, transportes);
 app.use('/establecimientos', usersVerifyToken, establecimientos);
 app.use('/rubros', usersVerifyToken, rubros);
 app.use('/subrubros', usersVerifyToken, subrubros);
+app.use('/laboratorios', usersVerifyToken, laboratorios);
+app.use('/unidadMedidas', usersVerifyToken, unidadMedidas);
+
 
 
 app.get('/version', (req, res) => {

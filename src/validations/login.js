@@ -43,10 +43,11 @@ router.post('/', async (req, res) => {
         const { sub, descripcion, permisos } = { sub: user.id, descripcion: user.descripcion, permisos: user.permisos }
 
         const token = jwt.sign({
+            user: data.user,
             sub,
             descripcion,
             permisos,
-            exp: Date.now() + 14400 * 1000 //3600 segundos
+            exp: Date.now() + 7200 * 1000 //7200 segundos = 120 minutoos = 2 horas
         }, secret);
 
         res.status(200).json({
