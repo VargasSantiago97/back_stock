@@ -19,6 +19,8 @@ const rubros = require('./../routes/rubros.routes');
 const subrubros = require('./../routes/subrubros.routes');
 const laboratorios = require('./../routes/laboratorios.routes');
 const unidadMedidas = require('./../routes/unidadMedidas.routes');
+const articulos = require('./../routes/articulos.routes');
+const depositos = require('./../routes/depositos.routes');
 
 
 const login = require('./../validations/login');
@@ -37,6 +39,8 @@ app.use('/rubros', usersVerifyToken, rubros);
 app.use('/subrubros', usersVerifyToken, subrubros);
 app.use('/laboratorios', usersVerifyToken, laboratorios);
 app.use('/unidadMedidas', usersVerifyToken, unidadMedidas);
+app.use('/articulos', usersVerifyToken, articulos);
+app.use('/depositos', usersVerifyToken, depositos);
 
 
 
