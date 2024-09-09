@@ -1,6 +1,8 @@
 const express = require('express');
 const router = express.Router();
 
+const { Op } = require('sequelize');
+
 const log = require('electron-log');
 const path = require('path');
 log.transports.file.resolvePathFn = () => path.join(__dirname, `../../logs/logs ${fechaHoy()}.txt`);
@@ -183,16 +185,93 @@ router.delete('/:id', async (req, res) => {
         const updateCliente = await Cliente.update({
             estado: 0
         },
-        {
-            where: {
-                id: id
-            }
-        })
+            {
+                where: {
+                    id: id
+                }
+            })
 
         res.status(202).json({
             ok: true,
             mensaje: updateCliente,
             id: updateCliente
+        })
+    }
+    catch (err) {
+        res.status(500).json({
+            ok: false,
+            mensaje: err,
+            id: ''
+        })
+    }
+});
+
+router.get('/codigo/:codigo', async (req, res) => {
+    log.info('GET one cliente por codigo')
+    const codigo = req.params.codigo
+
+    try {
+        const cliente = await Cliente.findOne({
+            where: {
+                codigo: codigo
+            }
+        })
+
+        let datosConvertidos;
+        try {
+            datosConvertidos = JSON.parse(cliente.datos);
+        } catch (error) {
+            datosConvertidos = {};
+        }
+
+        res.status(200).json({
+            ok: true,
+            mensaje: {
+                ...cliente.dataValues,
+                datos: datosConvertidos
+            }
+        })
+    }
+    catch (err) {
+        res.status(500).json({
+            ok: false,
+            mensaje: err,
+            id: ''
+        })
+    }
+});
+
+router.get('/buscar/:buscando', async (req, res) => {
+    log.info('GET clientes buscando alias o razon social')
+    const buscando = req.params.buscando
+
+    try {
+        const resultado = await Cliente.findAll({
+            where: {
+                estado: 1,
+                [Op.or]: [
+                    { razon_social: { [Op.like]: `%${buscando}%` } },
+                    { alias: { [Op.like]: `%${buscando}%` } }
+                ]
+            }
+        })
+
+        const clientes = resultado.map(cliente => {
+            let datosConvertidos;
+            try {
+                datosConvertidos = JSON.parse(cliente.dataValues.datos);
+            } catch (error) {
+                datosConvertidos = {};
+            }
+            return {
+                ...cliente.dataValues,
+                datos: datosConvertidos
+            };
+        });
+
+        res.status(200).json({
+            ok: true,
+            mensaje: clientes
         })
     }
     catch (err) {
