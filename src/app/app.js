@@ -22,6 +22,8 @@ const unidadMedidas = require('./../routes/unidadMedidas.routes');
 const articulos = require('./../routes/articulos.routes');
 const depositos = require('./../routes/depositos.routes');
 
+const pdf_ingresos = require('./../routes/pdf/ingreso.routes');
+
 
 const login = require('./../validations/login');
 const verifyToken = require('./../validations/validation');
@@ -41,6 +43,9 @@ app.use('/laboratorios', usersVerifyToken, laboratorios);
 app.use('/unidadMedidas', usersVerifyToken, unidadMedidas);
 app.use('/articulos', usersVerifyToken, articulos);
 app.use('/depositos', usersVerifyToken, depositos);
+
+
+app.use('/pdf/ingresos', usersVerifyToken, pdf_ingresos);
 
 
 

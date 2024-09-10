@@ -1,6 +1,8 @@
 const express = require('express');
 const router = express.Router();
 
+const { Op } = require('sequelize');
+
 const log = require('electron-log');
 const path = require('path');
 log.transports.file.resolvePathFn = () => path.join(__dirname, `../../logs/logs ${fechaHoy()}.txt`);
@@ -238,6 +240,83 @@ router.delete('/:id', async (req, res) => {
             ok: true,
             mensaje: updateArticulo,
             id: updateArticulo
+        })
+    }
+    catch (err) {
+        res.status(500).json({
+            ok: false,
+            mensaje: err,
+            id: ''
+        })
+    }
+});
+
+router.get('/buscar/codigo/:codigo', async (req, res) => {
+    log.info('GET one articulo por codigo')
+    const codigo = req.params.codigo
+
+    try {
+        const resultado = await Articulo.findOne({
+            where: {
+                codigo: codigo,
+                estado: 1
+            }
+        })
+
+        let datosConvertidos;
+        try {
+            datosConvertidos = JSON.parse(resultado.dataValues.datos);
+        } catch (error) {
+            datosConvertidos = {};
+        }
+
+        res.status(200).json({
+            ok: true,
+            mensaje: {
+                ...resultado.dataValues,
+                datos: datosConvertidos
+            }
+        })
+    }
+    catch (err) {
+        res.status(500).json({
+            ok: false,
+            mensaje: err,
+            id: ''
+        })
+    }
+});
+
+router.get('/buscar/descripcion/:descripcion', async (req, res) => {
+    log.info('GET all articulo por descripcion')
+    const descripcion = req.params.descripcion
+
+
+    try {
+        const resultado = await Articulo.findAll({
+            where: {
+                estado: 1,
+                activo : 1,
+                descripcion: { [Op.like]: `%${descripcion}%` }
+            }
+        })
+
+        const articulos = resultado.map(articulo => {
+            let datosConvertidos;
+            try {
+                datosConvertidos = JSON.parse(articulo.dataValues.datos);
+            } catch (error) {
+                datosConvertidos = {};
+            }
+            return {
+                ...articulo.dataValues,
+                datos: datosConvertidos
+            };
+        });
+
+        res.status(200).json({
+            ok: true,
+            mensaje: articulos
         })
     }
     catch (err) {

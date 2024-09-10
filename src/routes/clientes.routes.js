@@ -219,7 +219,7 @@ router.get('/codigo/:codigo', async (req, res) => {
 
         let datosConvertidos;
         try {
-            datosConvertidos = JSON.parse(cliente.datos);
+            datosConvertidos = JSON.parse(cliente.dataValues.datos);
         } catch (error) {
             datosConvertidos = {};
         }
