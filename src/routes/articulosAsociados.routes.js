@@ -19,34 +19,34 @@ function fechaHoy() {
     return `${anio}-${mes}-${dia}`;
 }
 
-const Articulo = require('../model/articulos.model');
+const ArticuloAsociado = require('../model/articulosAsociados.model');
 
 router.get('/', async (req, res) => {
-    log.info('GET all Articulos')
+    log.info('GET all ArticuloAsociado')
 
     try {
-        const resultado = await Articulo.findAll({
+        const resultado = await ArticuloAsociado.findAll({
             where: {
                 estado: 1
             }
         })
 
-        const articulos = resultado.map(articulo => {
+        const articulosAsociados = resultado.map(articuloAsociado => {
             let datosConvertidos;
             try {
-                datosConvertidos = JSON.parse(articulo.dataValues.datos);
+                datosConvertidos = JSON.parse(articuloAsociado.dataValues.datos);
             } catch (error) {
                 datosConvertidos = {};
             }
             return {
-                ...articulo.dataValues,
+                ...articuloAsociado.dataValues,
                 datos: datosConvertidos
             };
         });
 
         res.status(200).json({
             ok: true,
-            mensaje: articulos
+            mensaje: articulosAsociados
         })
     }
     catch (err) {
@@ -59,11 +59,11 @@ router.get('/', async (req, res) => {
 });
 
 router.get('/:id', async (req, res) => {
-    log.info('GET one articulo')
+    log.info('GET one articuloAsociado')
     const id = req.params.id
 
     try {
-        const resultado = await Articulo.findOne({
+        const resultado = await ArticuloAsociado.findOne({
             where: {
                 id: id
             }
@@ -93,36 +93,42 @@ router.get('/:id', async (req, res) => {
     }
 });
 
-router.get('/:id_rubro/:id_subRubro', async (req, res) => {
-    log.info('GET all Articulos con rubro y subRubro')
-    const id_rubro = req.params.id_rubro
-    const id_subRubro = req.params.id_subRubro
+router.post('/', async (req, res) => {
+
+    await ArticuloAsociado.sync();
+    const dataBody = req.body
 
     try {
-        const resultado = await Articulo.findAll({
-            where: {
-                id_rubro: id_rubro,
-                id_subRubro: id_subRubro,
-                estado: 1
-            }
+        const createArticuloAsociado = await ArticuloAsociado.create({
+            id_articulo: dataBody.id_articulo,
+            id_documento: dataBody.id_documento,
+            id_rubro: dataBody.id_rubro,
+            id_subRubro: dataBody.id_subRubro,
+            id_laboratorio: dataBody.id_laboratorio,
+            id_unidadMedida: dataBody.id_unidadMedida,
+            id_deposito: dataBody.id_deposito,
+            cantidad: dataBody.cantidad,
+            cantidadUnidadFundamental: dataBody.cantidadUnidadFundamental,
+            solicitaLote: dataBody.solicitaLote,
+            solicitaVencimiento: dataBody.solicitaVencimiento,
+            lote: dataBody.lote,
+            vencimiento: dataBody.vencimiento,
+            codigo: dataBody.codigo,
+            descripcion: dataBody.descripcion,
+            observaciones: dataBody.observaciones,
+            unidadFundamental: dataBody.unidadFundamental,
+            cantidadPorUnidadFundamental: dataBody.cantidadPorUnidadFundamental,
+            ajuste: dataBody.ajuste,
+            datos: dataBody.datos,
+            estado: dataBody.estado,
+            createdBy: dataBody.createdBy,
+            updatedBy: dataBody.updatedBy
         })
 
-        const articulos = resultado.map(articulo => {
-            let datosConvertidos;
-            try {
-                datosConvertidos = JSON.parse(articulo.dataValues.datos);
-            } catch (error) {
-                datosConvertidos = {};
-            }
-            return {
-                ...articulo.dataValues,
-                datos: datosConvertidos
-            };
-        });
-
-        res.status(200).json({
+        res.status(201).json({
             ok: true,
-            mensaje: articulos
+            mensaje: createArticuloAsociado.id,
+            id: createArticuloAsociado.id
         })
     }
     catch (err) {
@@ -132,37 +138,21 @@ router.get('/:id_rubro/:id_subRubro', async (req, res) => {
             id: ''
         })
     }
+
 });
 
-router.post('/', async (req, res) => {
+router.post('/multiple', async (req, res) => {
 
-    await Articulo.sync();
+    await ArticuloAsociado.sync();
     const dataBody = req.body
 
     try {
-        const createArticulo = await Articulo.create({
-            id_rubro: dataBody.id_rubro,
-            id_subRubro: dataBody.id_subRubro,
-            id_laboratorio: dataBody.id_laboratorio,
-            id_unidadMedida: dataBody.id_unidadMedida,
-            codigo: dataBody.codigo,
-            descripcion: dataBody.descripcion,
-            observaciones: dataBody.observaciones,
-            unidadFundamental: dataBody.unidadFundamental,
-            cantidadUnidadFundamental: dataBody.cantidadUnidadFundamental,
-            solicitaVencimiento: dataBody.solicitaVencimiento,
-            solicitaLote: dataBody.solicitaLote,
-            activo: dataBody.activo,
-            datos: dataBody.datos,
-            estado: dataBody.estado,
-            createdBy: dataBody.createdBy,
-            updatedBy: dataBody.updatedBy
-        })
+        const createArticulosAsociados = await ArticuloAsociado.bulkCreate(dataBody);
 
         res.status(201).json({
             ok: true,
-            mensaje: createArticulo.id,
-            id: createArticulo.id
+            mensaje: createArticulosAsociados,
+            id: createArticulosAsociados
         })
     }
     catch (err) {
@@ -176,25 +166,32 @@ router.post('/', async (req, res) => {
 });
 
 router.put('/:id', async (req, res) => {
-    log.info('PUT subrubro')
+    log.info('PUT articuloAsociado')
 
     const id = req.params.id
     const dataBody = req.body
 
     try {
-        const updateArticulo = await Articulo.update({
+        const updateArticuloAsociado = await ArticuloAsociado.update({
+            id_articulo: dataBody.id_articulo,
+            id_documento: dataBody.id_documento,
             id_rubro: dataBody.id_rubro,
             id_subRubro: dataBody.id_subRubro,
             id_laboratorio: dataBody.id_laboratorio,
             id_unidadMedida: dataBody.id_unidadMedida,
+            id_deposito: dataBody.id_deposito,
+            cantidad: dataBody.cantidad,
+            cantidadUnidadFundamental: dataBody.cantidadUnidadFundamental,
+            solicitaLote: dataBody.solicitaLote,
+            solicitaVencimiento: dataBody.solicitaVencimiento,
+            lote: dataBody.lote,
+            vencimiento: dataBody.vencimiento,
             codigo: dataBody.codigo,
             descripcion: dataBody.descripcion,
             observaciones: dataBody.observaciones,
             unidadFundamental: dataBody.unidadFundamental,
-            cantidadUnidadFundamental: dataBody.cantidadUnidadFundamental,
-            solicitaVencimiento: dataBody.solicitaVencimiento,
-            solicitaLote: dataBody.solicitaLote,
-            activo: dataBody.activo,
+            cantidadPorUnidadFundamental: dataBody.cantidadPorUnidadFundamental,
+            ajuste: dataBody.ajuste,
             datos: dataBody.datos,
             estado: dataBody.estado,
             createdBy: dataBody.createdBy,
@@ -208,8 +205,8 @@ router.put('/:id', async (req, res) => {
 
         res.status(202).json({
             ok: true,
-            mensaje: updateArticulo,
-            id: updateArticulo
+            mensaje: updateArticuloAsociado,
+            id: updateArticuloAsociado
         })
     }
     catch (err) {
@@ -227,7 +224,7 @@ router.delete('/:id', async (req, res) => {
     const id = req.params.id
 
     try {
-        const updateArticulo = await Articulo.update({
+        const updateArticuloAsociado = await ArticuloAsociado.update({
             estado: 0
         },
             {
@@ -238,8 +235,8 @@ router.delete('/:id', async (req, res) => {
 
         res.status(202).json({
             ok: true,
-            mensaje: updateArticulo,
-            id: updateArticulo
+            mensaje: updateArticuloAsociado,
+            id: updateArticuloAsociado
         })
     }
     catch (err) {
@@ -251,72 +248,35 @@ router.delete('/:id', async (req, res) => {
     }
 });
 
-router.get('/buscar/codigo/:codigo', async (req, res) => {
-    log.info('GET one articulo por codigo')
-    const codigo = req.params.codigo
+router.get('/buscar/:id_documento', async (req, res) => {
+    log.info('Obtener articuloAsociado de documento')
+
+    const id_documento = req.params.id_documento
 
     try {
-        const resultado = await Articulo.findOne({
-            where: {
-                codigo: codigo,
-                estado: 1
-            }
-        })
-
-        let datosConvertidos;
-        try {
-            datosConvertidos = JSON.parse(resultado.dataValues.datos);
-        } catch (error) {
-            datosConvertidos = {};
-        }
-
-        res.status(200).json({
-            ok: true,
-            mensaje: {
-                ...resultado.dataValues,
-                datos: datosConvertidos
-            }
-        })
-    }
-    catch (err) {
-        res.status(500).json({
-            ok: false,
-            mensaje: err,
-            id: ''
-        })
-    }
-});
-
-router.get('/buscar/descripcion/:descripcion', async (req, res) => {
-    log.info('GET all articulo por descripcion')
-    const descripcion = req.params.descripcion
-
-
-    try {
-        const resultado = await Articulo.findAll({
+        const resultado = await ArticuloAsociado.findAll({
             where: {
                 estado: 1,
-                activo : 1,
-                descripcion: { [Op.like]: `%${descripcion}%` }
+                id_documento: id_documento
             }
         })
 
-        const articulos = resultado.map(articulo => {
+        const articulosAsociados = resultado.map(articuloAsociado => {
             let datosConvertidos;
             try {
-                datosConvertidos = JSON.parse(articulo.dataValues.datos);
+                datosConvertidos = JSON.parse(articuloAsociado.dataValues.datos);
             } catch (error) {
                 datosConvertidos = {};
             }
             return {
-                ...articulo.dataValues,
+                ...articuloAsociado.dataValues,
                 datos: datosConvertidos
             };
         });
 
         res.status(200).json({
             ok: true,
-            mensaje: articulos
+            mensaje: articulosAsociados
         })
     }
     catch (err) {
@@ -327,6 +287,5 @@ router.get('/buscar/descripcion/:descripcion', async (req, res) => {
         })
     }
 });
-
 
 module.exports = router;
