@@ -71,7 +71,7 @@ router.get('/:id', async (req, res) => {
 
         let datosConvertidos;
         try {
-            datosConvertidos = JSON.parse(resultado.datos);
+            datosConvertidos = JSON.parse(resultado.dataValues.datos);
         } catch (error) {
             datosConvertidos = {};
         }
@@ -79,7 +79,7 @@ router.get('/:id', async (req, res) => {
         res.status(200).json({
             ok: true,
             mensaje: {
-                ...resultado,
+                ...resultado.dataValues,
                 datos: datosConvertidos
             }
         })

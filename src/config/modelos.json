@@ -1,0 +1,18 @@
+{
+    "moliendas": {
+        "razon_social": "MOLIENDAS PAMPA S.A.S.",
+        "direccion": "Ruta Nacional 16, km 262.3",
+        "localidad": "Pampa del Infierno, Chaco",
+        "condicion_iva": "IVA RESPONSABLE INSCRIPTO",
+        "cuit": "30-71665005-3",
+        "iibb": "30-71665005-3"
+    },
+    "norsemillas": {
+        "razon_social": "NORSEMILLAS S.R.L.",
+        "direccion": "Ruta Nacional 16, km 262.4",
+        "localidad": "Pampa del Infierno, Chaco",
+        "condicion_iva": "IVA RESPONSABLE INSCRIPTO",
+        "cuit": "30-71632146-7",
+        "iibb": "30-71632146-7"
+    }
+}

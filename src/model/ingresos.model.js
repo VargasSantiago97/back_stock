@@ -47,7 +47,7 @@ Ingreso.init({
         allowNull: true
     },
     cuit: {
-        type: DataTypes.INTEGER,
+        type: DataTypes.BIGINT,
         allowNull: true
     },
     alias: {
@@ -103,7 +103,7 @@ Ingreso.init({
         allowNull: true
     },
     transporte_cuit_transporte: {
-        type: DataTypes.INTEGER,
+        type: DataTypes.BIGINT,
         allowNull: true
     },
     transporte_chofer: {
@@ -111,7 +111,7 @@ Ingreso.init({
         allowNull: true
     },
     transporte_cuit_chofer: {
-        type: DataTypes.INTEGER,
+        type: DataTypes.BIGINT,
         allowNull: true
     },
     transporte_patente_chasis: {
