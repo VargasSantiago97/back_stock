@@ -19,10 +19,22 @@ function fechaHoy() {
 
     return `${anio}-${mes}-${dia}`;
 }
+function vencimientoFormato(venc) {
+    if (!venc) {
+        return '-'
+    }
+    try {
+        var fecha_venc = venc.split('-')
+        return `${fecha_venc[2]}/${fecha_venc[1]}/${fecha_venc[0]}`
+    } catch {
+        return '-'
+    }
+}
 
 const Ingreso = require('../../model/ingresos.model');
 const ArticuloAsociado = require('../../model/articulosAsociados.model');
-
+const Deposito = require('../../model/depositos.model');
+const UnidadMedida = require('../../model/unidadMedidas.model');
 
 const drawRoundedRect = (doc, x, y, width, height) => {
     doc.roundedRect(x, y, width, height, 3).stroke();
@@ -61,7 +73,7 @@ const depositoX = 410;
 const loteX = 460;
 const vencimientoX = 530;
 
-const addEncabezado = (doc, datos) => {
+const addEncabezado = (doc, datos, copia) => {
 
     razon_social = modelos[datos.modelo].razon_social
     direccion = modelos[datos.modelo].direccion
@@ -90,6 +102,14 @@ const addEncabezado = (doc, datos) => {
         height: 35,
         ellipsis: true,
         lineGap: -2
+    });
+
+    //COPIA [original, dup...]
+    doc.fontSize(10).font('Helvetica-Bold').text(copia, 265, 85, {
+        align: 'center',
+        width: 80,
+        height: 20,
+        ellipsis: true
     });
 
 
@@ -152,7 +172,7 @@ const addCliente = (doc, datos) => {
 
     drawTextWithBorder(doc, `${datos.localidad} (${datos.codigo_postal})`, 340, 157, 240, 14, 'left', 'Helvetica', 10)
     drawTextWithBorder(doc, datos.provincia, 340, 176, 240, 14, 'left', 'Helvetica', 10)
-    drawTextWithBorder(doc, datos.cuit, 340, 194, 240, 14, 'left', 'Helvetica-Bold', 10)
+    drawTextWithBorder(doc, datos.cuit ? datos.cuit : '', 340, 194, 240, 14, 'left', 'Helvetica-Bold', 10)
 
 }
 
@@ -161,7 +181,7 @@ const addTransporte = (doc, datos) => {
 
     transporte = datos.transporte_transporte;
     domicilio = '';
-    cuit = datos.transporte_cuit_transporte;
+    cuit = datos.transporte_cuit_transporte || '';
 
     conductor = datos.transporte_chofer;
     patente_chasis = datos.transporte_patente_chasis;
@@ -186,12 +206,10 @@ const addTransporte = (doc, datos) => {
 
 }
 
-const addPie = (doc, datos, pagina) => {
-    totalPaginas = 1
+const addPie = (doc, datos, pagina, cantidadPaginas) => {
 
     total_unidades = datos.total_unidades
     observaciones = datos.observaciones
-
 
     drawRoundedRect(doc, 20, 634, 560, 70);
     doc.fontSize(8)
@@ -231,12 +249,13 @@ const addPie = (doc, datos, pagina) => {
         .text('/   /', 480, 770, { align: 'center', width: 80, height: 17 });
 
     doc.fontSize(8).font('Helvetica')
-        .text(`Pág ${pagina}/${totalPaginas}`, 0, 805, { align: 'center' })
+        .text(`Pág ${pagina}/${cantidadPaginas}`, 0, 805, { align: 'center' })
 }
 
-router.get('/:id', async (req, res) => {
+router.get('/:id/:cant', async (req, res) => {
 
     const remitoId = req.params.id;
+    const cantidadCopias = req.params.cant;
 
     try {
         const ingreso = await Ingreso.findOne({
@@ -244,11 +263,20 @@ router.get('/:id', async (req, res) => {
                 id: remitoId
             }
         })
-
         const articulos = await ArticuloAsociado.findAll({
             where: {
                 estado: 1,
                 id_documento: remitoId
+            }
+        })
+        const unidadesMedidas = await UnidadMedida.findAll({
+            where: {
+                estado: 1
+            }
+        })
+        const depositos = await Deposito.findAll({
+            where: {
+                estado: 1
             }
         })
 
@@ -263,104 +291,74 @@ router.get('/:id', async (req, res) => {
 
         doc.pipe(res);
 
-        var pagina = 1
+        tiposCopias = ['ORIGINAL', 'DUPLICADO', 'TRIPLICADO', 'CUADRIPLICADO', 'QUINTUPLICADO', 'COPIA']
 
-        addEncabezado(doc, ingreso.dataValues);
-        addCliente(doc, ingreso.dataValues);
-        addTransporte(doc, ingreso.dataValues);
-        addPie(doc, ingreso.dataValues, pagina);
-
-
-
-        const rowHeight = 16;
-
-        var Articulos = [
-            {
-                codigo: 'M-P-2089-R22',
-                descripcion: 'MAIZ PIONEER 2089 VYHR - CAL. R22 - MAIZ PIONEER 2089 VYHR - CAL. R22 - MAIZ PIONEER 2089 VYHR - CAL. R22 - MAIZ PIONEER 2089 VYHR - CAL. R22',
-                cantidad: 123,
-                unidad: 'BOLSAS',
-                deposito: 'DEP 1',
-                lote: '31B0266',
-                vencimiento: '12/12/2012',
-            },
-            {
-                codigo: '2',
-                descripcion: 'MAIZ PIONEER 2089 VYHR - CAL. R22',
-                cantidad: 12312.23,
-                unidad: 'KILOS',
-                deposito: 'CENTRAL',
-                lote: '-',
-                vencimiento: '-',
-            },
-            {
-                codigo: 'M-P-2089-R22',
-                descripcion: 'MAIZ PIONEER 2089 VYHR - CAL. R22 - MAIZ PIONEER 2089 VYHR - CAL. R22 - MAIZ PIONEER 2089 VYHR - CAL. R22 - MAIZ PIONEER 2089 VYHR - CAL. R22',
-                cantidad: 123,
-                unidad: 'BOLSAS',
-                deposito: 'DEP 1',
-                lote: '31B0266',
-                vencimiento: '12/12/2012',
-            },
-            {
-                codigo: '013',
-                descripcion: 'Access-Control-Allow-Origin',
-                cantidad: '01',
-                unidad: 123,
-                deposito: 123,
-                lote: 123,
-                vencimiento: 123,
-            },
-            {
-                codigo: '013',
-                descripcion: 'Access-Control-Allow-Origin',
-                cantidad: '01',
-                unidad: 123,
-                deposito: 123,
-                lote: 123,
-                vencimiento: 123,
+        var Articulos = articulos.map(articulo => {
+            return {
+                codigo: articulo.dataValues.codigo,
+                descripcion: articulo.dataValues.descripcion,
+                cantidad: articulo.dataValues.cantidad,
+                unidad: unidadesMedidas.some(e => e.dataValues.id == articulo.dataValues.id_unidadMedida) ? unidadesMedidas.find(e => e.dataValues.id == articulo.dataValues.id_unidadMedida).descripcion : '-',
+                deposito: depositos.some(e => e.dataValues.id == articulo.dataValues.id_deposito) ? depositos.find(e => e.dataValues.id == articulo.dataValues.id_deposito).descripcion : '-',
+                lote: articulo.dataValues.lote || '-',
+                vencimiento: vencimientoFormato(articulo.dataValues.vencimiento)
             }
-        ];
+        })
 
-        let y = tableTop + rowHeight;
-        let cantidadRegistros = 1
+        for (let copia = 0; copia < cantidadCopias; copia++) {
+            if(copia) doc.addPage();
 
-        Articulos.forEach(articulo => {
+            var pagina = 1
+            let cantidadPaginas = Math.ceil(Articulos.length / 19);
 
-            var cantidad = ''
-            try {
-                cantidad = articulo.cantidad.toLocaleString('es-ES', {
-                    minimumFractionDigits: 2,
-                    maximumFractionDigits: 2
-                })
-            } catch {
-                cantidad = articulo.cantidad
-            }
+            addEncabezado(doc, ingreso.dataValues, tiposCopias[copia] ?  tiposCopias[copia] : 'COPIA');
+            addCliente(doc, ingreso.dataValues);
+            addTransporte(doc, ingreso.dataValues);
+            addPie(doc, ingreso.dataValues, pagina, cantidadPaginas);
 
-            drawTextWithBorder(doc, articulo.codigo, codigoX, y, 61, rowHeight, 'left');
-            drawTextWithBorder(doc, articulo.descripcion, descripcionX, y, 225, rowHeight, 'left');
-            drawTextWithBorder(doc, cantidad, cantidadX, y, 50, rowHeight, 'right');
-            drawTextWithBorder(doc, articulo.unidad, unidadMedidaX, y, 50, rowHeight, 'center');
-            drawTextWithBorder(doc, articulo.deposito, depositoX, y, 50, rowHeight, 'center');
-            drawTextWithBorder(doc, articulo.lote, loteX, y, 70, rowHeight, 'center');
-            drawTextWithBorder(doc, articulo.vencimiento, vencimientoX, y, 50, rowHeight, 'center');
+            const rowHeight = 16;
 
-            y += rowHeight;
-            cantidadRegistros++;
+            let y = tableTop + rowHeight;
+            let cantidadRegistros = 1
 
-            if (cantidadRegistros >= 20) {
-                pagina++;
+            Articulos.forEach(articulo => {
 
-                doc.addPage();
-                addEncabezado(doc);
-                addCliente(doc);
-                addTransporte(doc);
-                addPie(doc, ingreso.dataValues, pagina);
+                if (cantidadRegistros >= 20) {
+                    pagina++;
 
-                cantidadRegistros = 1
-                y = tableTop + rowHeight
-            }
-        });
+                    doc.addPage();
+                    addEncabezado(doc, ingreso.dataValues, tiposCopias[copia] ?  tiposCopias[copia] : 'COPIA');
+                    addCliente(doc, ingreso.dataValues);
+                    addTransporte(doc, ingreso.dataValues);
+                    addPie(doc, ingreso.dataValues, pagina, cantidadPaginas);
+
+                    cantidadRegistros = 1
+                    y = tableTop + rowHeight
+                }
+
+                var cantidad = ''
+                try {
+                    cantidad = articulo.cantidad.toLocaleString('es-ES', {
+                        minimumFractionDigits: 2,
+                        maximumFractionDigits: 2
+                    })
+                } catch {
+                    cantidad = articulo.cantidad
+                }
+
+                drawTextWithBorder(doc, articulo.codigo, codigoX, y, 61, rowHeight, 'left');
+                drawTextWithBorder(doc, articulo.descripcion, descripcionX, y, 225, rowHeight, 'left');
+                drawTextWithBorder(doc, cantidad, cantidadX, y, 50, rowHeight, 'right');
+                drawTextWithBorder(doc, articulo.unidad, unidadMedidaX, y, 50, rowHeight, 'center');
+                drawTextWithBorder(doc, articulo.deposito, depositoX, y, 50, rowHeight, 'center');
+                drawTextWithBorder(doc, articulo.lote, loteX, y, 70, rowHeight, 'center');
+                drawTextWithBorder(doc, articulo.vencimiento, vencimientoX, y, 50, rowHeight, 'center');
+
+                y += rowHeight;
+                cantidadRegistros++;
+
+            });
+        }
 
         doc.end();
 
