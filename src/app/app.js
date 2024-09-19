@@ -31,7 +31,7 @@ const login = require('./../validations/login');
 const verifyToken = require('./../validations/validation');
 const usersVerifyToken = require('../validations/users.validation');
 
-app.use(express.static(path.join(__dirname, '../public')));
+app.use(express.static(path.join(__dirname, '../../public')));
 app.use('/login', login);
 app.use('/users', usersVerifyToken, users);
 
@@ -64,6 +64,7 @@ app.get('/version', (req, res) => {
 app.get('*', (req, res) => {
     res.sendFile(path.join(__dirname, '../../public', 'index.html'));
 })
+
 
 
 module.exports = app;
