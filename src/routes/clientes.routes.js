@@ -213,7 +213,8 @@ router.get('/codigo/:codigo', async (req, res) => {
     try {
         const cliente = await Cliente.findOne({
             where: {
-                codigo: codigo
+                codigo: codigo,
+                estado: 1
             }
         })
 

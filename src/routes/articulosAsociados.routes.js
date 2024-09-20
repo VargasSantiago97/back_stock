@@ -100,6 +100,7 @@ router.post('/', async (req, res) => {
 
     try {
         const createArticuloAsociado = await ArticuloAsociado.create({
+            id_original: dataBody.id_original,
             id_articulo: dataBody.id_articulo,
             id_documento: dataBody.id_documento,
             id_rubro: dataBody.id_rubro,
@@ -173,6 +174,7 @@ router.put('/:id', async (req, res) => {
 
     try {
         const updateArticuloAsociado = await ArticuloAsociado.update({
+            id_original: dataBody.id_original,
             id_articulo: dataBody.id_articulo,
             id_documento: dataBody.id_documento,
             id_rubro: dataBody.id_rubro,
@@ -273,6 +275,84 @@ router.get('/buscar/:id_documento', async (req, res) => {
                 datos: datosConvertidos
             };
         });
+
+        res.status(200).json({
+            ok: true,
+            mensaje: articulosAsociados
+        })
+    }
+    catch (err) {
+        res.status(500).json({
+            ok: false,
+            mensaje: err,
+            id: ''
+        })
+    }
+});
+
+router.get('/devolucion/:id_documento', async (req, res) => {
+    log.info('Obtener articuloAsociado de documento')
+
+    const id_documento = req.params.id_documento
+
+    try {
+        const resultado = await ArticuloAsociado.findAll({
+            where: {
+                estado: 1,
+                id_documento: id_documento
+            }
+        })
+
+        log.info('## resultado')
+
+        const articulosAsociados = await Promise.all(resultado.map(async articuloAsociado => {
+            let datosConvertidos;
+            try {
+                datosConvertidos = JSON.parse(articuloAsociado.dataValues.datos);
+            } catch (error) {
+                datosConvertidos = {};
+            }
+
+            const positivos = await ArticuloAsociado.findAll({
+                where: {
+                    estado: 1,
+                    id_original: articuloAsociado.dataValues.id,
+                    ajuste: 'positivo'
+                }
+            })
+            log.info('## positivo')
+            console.log(positivos)
+
+            const negativos = await ArticuloAsociado.findAll({
+                where: {
+                    estado: 1,
+                    id_original: articuloAsociado.dataValues.id,
+                    ajuste: 'negativo'
+                }
+            })
+            log.info('## negativo')
+            console.log(negativos)
+
+
+            const sumar = positivos.reduce((acc, artAsoc) => {
+                return acc + artAsoc.dataValues.cantidad
+            }, 0)
+            log.info('## suma')
+
+            const restar = negativos.reduce((acc, artAsoc) => {
+                return acc + artAsoc.dataValues.cantidad
+            }, 0)
+            log.info('## resta')
+
+
+
+            return {
+                ...articuloAsociado.dataValues,
+                datos: datosConvertidos,
+                salidas: restar,
+                entradas: sumar
+            };
+        }));
 
         res.status(200).json({
             ok: true,

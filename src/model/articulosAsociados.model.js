@@ -14,6 +14,10 @@ ArticuloAsociado.init({
         defaultValue: DataTypes.UUIDV4,
         primaryKey: true
     },
+    id_original: {
+        type: DataTypes.STRING,
+        allowNull: true
+    },
     id_articulo: {
         type: DataTypes.STRING,
         allowNull: true
