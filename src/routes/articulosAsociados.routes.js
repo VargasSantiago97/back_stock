@@ -120,6 +120,7 @@ router.post('/', async (req, res) => {
             unidadFundamental: dataBody.unidadFundamental,
             cantidadPorUnidadFundamental: dataBody.cantidadPorUnidadFundamental,
             ajuste: dataBody.ajuste,
+            documento: dataBody.ajuste,
             datos: dataBody.datos,
             estado: dataBody.estado,
             createdBy: dataBody.createdBy,
@@ -194,6 +195,7 @@ router.put('/:id', async (req, res) => {
             unidadFundamental: dataBody.unidadFundamental,
             cantidadPorUnidadFundamental: dataBody.cantidadPorUnidadFundamental,
             ajuste: dataBody.ajuste,
+            documento: dataBody.ajuste,
             datos: dataBody.datos,
             estado: dataBody.estado,
             createdBy: dataBody.createdBy,
@@ -303,8 +305,6 @@ router.get('/devolucion/:id_documento', async (req, res) => {
             }
         })
 
-        log.info('## resultado')
-
         const articulosAsociados = await Promise.all(resultado.map(async articuloAsociado => {
             let datosConvertidos;
             try {
@@ -320,8 +320,6 @@ router.get('/devolucion/:id_documento', async (req, res) => {
                     ajuste: 'positivo'
                 }
             })
-            log.info('## positivo')
-            console.log(positivos)
 
             const negativos = await ArticuloAsociado.findAll({
                 where: {
@@ -330,19 +328,21 @@ router.get('/devolucion/:id_documento', async (req, res) => {
                     ajuste: 'negativo'
                 }
             })
-            log.info('## negativo')
-            console.log(negativos)
 
 
             const sumar = positivos.reduce((acc, artAsoc) => {
                 return acc + artAsoc.dataValues.cantidad
             }, 0)
-            log.info('## suma')
+            const sumar_uf = positivos.reduce((acc, artAsoc) => {
+                return acc + artAsoc.dataValues.cantidadUnidadFundamental
+            }, 0)
 
             const restar = negativos.reduce((acc, artAsoc) => {
                 return acc + artAsoc.dataValues.cantidad
             }, 0)
-            log.info('## resta')
+            const restar_uf = negativos.reduce((acc, artAsoc) => {
+                return acc + artAsoc.dataValues.cantidadUnidadFundamental
+            }, 0)
 
 
 
@@ -350,7 +350,9 @@ router.get('/devolucion/:id_documento', async (req, res) => {
                 ...articuloAsociado.dataValues,
                 datos: datosConvertidos,
                 salidas: restar,
-                entradas: sumar
+                entradas: sumar,
+                salidas_uf: restar_uf,
+                entradas_uf: sumar_uf
             };
         }));
 

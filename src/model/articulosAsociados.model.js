@@ -94,7 +94,10 @@ ArticuloAsociado.init({
         type: DataTypes.STRING,
         allowNull: true
     },
-
+    documento: {
+        type: DataTypes.STRING,
+        allowNull: true
+    },
     datos: {
         type: DataTypes.JSON
     },
