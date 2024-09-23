@@ -287,4 +287,44 @@ router.get('/buscar/ultimo/:ptoVta', async (req, res) => {
     }
 });
 
+router.get('/buscar/asociado/:id', async (req, res) => {
+
+    log.info('GET all Devoluciones asociadas a ingreso')
+    const id = req.params.id
+
+    try {
+        const resultado = await Devolucion.findAll({
+            where: {
+                id_asociado: id,
+                estado: 1
+            }
+        })
+
+        const devoluciones = resultado.map(devolucion => {
+            let datosConvertidos;
+            try {
+                datosConvertidos = JSON.parse(devolucion.dataValues.datos);
+            } catch (error) {
+                datosConvertidos = {};
+            }
+            return {
+                ...devolucion.dataValues,
+                datos: datosConvertidos
+            };
+        });
+
+        res.status(200).json({
+            ok: true,
+            mensaje: devoluciones
+        })
+    }
+    catch (err) {
+        res.status(500).json({
+            ok: false,
+            mensaje: err,
+            id: ''
+        })
+    }
+});
+
 module.exports = router;

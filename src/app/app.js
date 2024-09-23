@@ -25,8 +25,10 @@ const ingresos = require('./../routes/ingresos.routes');
 const devoluciones = require('./../routes/devoluciones.routes');
 const articulosAsociados = require('./../routes/articulosAsociados.routes');
 
-const pdf_ingresos = require('./../routes/pdf/ingreso.routes');
+const operaciones = require('./../routes/operaciones/ingresos.routes');
 
+const pdf_ingresos = require('./../routes/pdf/ingreso.routes');
+const pdf_devoluciones = require('./../routes/pdf/devolucion.routes');
 
 const login = require('./../validations/login');
 const verifyToken = require('./../validations/validation');
@@ -50,8 +52,10 @@ app.use('/ingresos', usersVerifyToken, ingresos);
 app.use('/devoluciones', usersVerifyToken, devoluciones);
 app.use('/articulosAsociados', usersVerifyToken, articulosAsociados);
 
+app.use('/operaciones', usersVerifyToken, operaciones);
 
 app.use('/pdf/ingresos', usersVerifyToken, pdf_ingresos);
+app.use('/pdf/devoluciones', usersVerifyToken, pdf_devoluciones);
 
 
 
