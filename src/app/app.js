@@ -30,6 +30,9 @@ const operaciones = require('./../routes/operaciones/ingresos.routes');
 const pdf_ingresos = require('./../routes/pdf/ingreso.routes');
 const pdf_devoluciones = require('./../routes/pdf/devolucion.routes');
 
+const xlsx_ingresos = require('./../routes/xlsx/ingresos.routes');
+
+
 const login = require('./../validations/login');
 const verifyToken = require('./../validations/validation');
 const usersVerifyToken = require('../validations/users.validation');
@@ -57,6 +60,7 @@ app.use('/operaciones', usersVerifyToken, operaciones);
 app.use('/pdf/ingresos', usersVerifyToken, pdf_ingresos);
 app.use('/pdf/devoluciones', usersVerifyToken, pdf_devoluciones);
 
+app.use('/xlsx/ingresos', usersVerifyToken, xlsx_ingresos);
 
 
 app.get('/version', (req, res) => {
