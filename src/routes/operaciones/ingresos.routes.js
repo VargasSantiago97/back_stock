@@ -19,6 +19,10 @@ function fechaHoy() {
     return `${anio}-${mes}-${dia}`;
 }
 
+function mostrarDocumento(pto, nro) {
+    return `${String(pto).padStart(4, '0')}-${String(nro).padStart(8, '0')}`
+}
+
 const Ingreso = require('../../model/ingresos.model');
 const Devolucion = require('../../model/devoluciones.model');
 
@@ -72,7 +76,8 @@ router.post('/ingresos', async (req, res) => {
             return {
                 ...dev.dataValues,
                 tipo: 'DEVOLUCION',
-                datos: datosConvertidos
+                datos: datosConvertidos,
+                numeroMostrar: mostrarDocumento(dev.dataValues.punto, dev.dataValues.numero)
             };
         });
         
@@ -86,7 +91,8 @@ router.post('/ingresos', async (req, res) => {
             return {
                 ...ing.dataValues,
                 tipo: 'INGRESO',
-                datos: datosConvertidos
+                datos: datosConvertidos,
+                numeroMostrar: mostrarDocumento(ing.dataValues.punto, ing.dataValues.numero)
             };
         });
 

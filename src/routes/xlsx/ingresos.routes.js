@@ -394,7 +394,10 @@ router.post('/detalles', async (req, res) => {
 
         worksheet.getCell('A' + fila_titulos).font = { bold: true, alignment: { horizontal: 'center' } }
         worksheet.getCell('G' + fila_titulos).font = { bold: true, alignment: { horizontal: 'center' } }
-        worksheet.getCell('C' + fila_titulos).font = { alignment: { horizontal: 'center' } }
+
+        if(documento.tipo == 'DEVOLUCION'){
+            worksheet.getCell('C' + fila_titulos).font = { bold: true, color: { argb: 'FFFF2222' } }
+        }
         worksheet.getCell('E' + fila_titulos).font = { alignment: { horizontal: 'center' } }
 
         var datosDocumento = ''

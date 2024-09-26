@@ -22,7 +22,9 @@ const unidadMedidas = require('./../routes/unidadMedidas.routes');
 const articulos = require('./../routes/articulos.routes');
 const depositos = require('./../routes/depositos.routes');
 const ingresos = require('./../routes/ingresos.routes');
+const egresos = require('./../routes/egresos.routes');
 const devoluciones = require('./../routes/devoluciones.routes');
+const egresosDevoluciones = require('./../routes/egresosDevoluciones.routes');
 const articulosAsociados = require('./../routes/articulosAsociados.routes');
 
 const operaciones = require('./../routes/operaciones/ingresos.routes');
@@ -52,7 +54,9 @@ app.use('/unidadMedidas', usersVerifyToken, unidadMedidas);
 app.use('/articulos', usersVerifyToken, articulos);
 app.use('/depositos', usersVerifyToken, depositos);
 app.use('/ingresos', usersVerifyToken, ingresos);
+app.use('/egresos', usersVerifyToken, egresos);
 app.use('/devoluciones', usersVerifyToken, devoluciones);
+app.use('/egresosDevoluciones', usersVerifyToken, egresosDevoluciones);
 app.use('/articulosAsociados', usersVerifyToken, articulosAsociados);
 
 app.use('/operaciones', usersVerifyToken, operaciones);
