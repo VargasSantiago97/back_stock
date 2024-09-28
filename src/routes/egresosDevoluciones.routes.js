@@ -256,7 +256,7 @@ router.delete('/:id', async (req, res) => {
     }
 });
 
-router.get('/buscar/ultimo/:ptoVta', async (req, res) => {
+router.get('/buscar/siguiente/:ptoVta', async (req, res) => {
     log.info('Obtener ultima egresoDevolucion')
 
     const ptoVta = req.params.ptoVta
@@ -271,11 +271,11 @@ router.get('/buscar/ultimo/:ptoVta', async (req, res) => {
 
         ultimo = resultado.reduce((max, curr) => {
             return max < curr.dataValues.numero ? curr.dataValues.numero : max
-        }, 1)
+        }, 0)
 
         res.status(200).json({
             ok: true,
-            mensaje: ultimo
+            mensaje: ultimo + 1
         })
     }
     catch (err) {

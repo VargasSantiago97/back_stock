@@ -27,7 +27,8 @@ const devoluciones = require('./../routes/devoluciones.routes');
 const egresosDevoluciones = require('./../routes/egresosDevoluciones.routes');
 const articulosAsociados = require('./../routes/articulosAsociados.routes');
 
-const operaciones = require('./../routes/operaciones/ingresos.routes');
+const operacionesIngresos = require('./../routes/operaciones/ingresos.routes');
+const operacionesEgresos = require('./../routes/operaciones/egresos.routes');
 
 const pdf_ingresos = require('./../routes/pdf/ingreso.routes');
 const pdf_devoluciones = require('./../routes/pdf/devolucion.routes');
@@ -59,7 +60,8 @@ app.use('/devoluciones', usersVerifyToken, devoluciones);
 app.use('/egresosDevoluciones', usersVerifyToken, egresosDevoluciones);
 app.use('/articulosAsociados', usersVerifyToken, articulosAsociados);
 
-app.use('/operaciones', usersVerifyToken, operaciones);
+app.use('/operaciones/ingresos', usersVerifyToken, operacionesIngresos);
+app.use('/operaciones/egresos', usersVerifyToken, operacionesEgresos);
 
 app.use('/pdf/ingresos', usersVerifyToken, pdf_ingresos);
 app.use('/pdf/devoluciones', usersVerifyToken, pdf_devoluciones);

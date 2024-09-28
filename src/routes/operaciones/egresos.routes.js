@@ -23,12 +23,12 @@ function mostrarDocumento(pto, nro) {
     return `${String(pto).padStart(4, '0')}-${String(nro).padStart(8, '0')}`
 }
 
-const Ingreso = require('../../model/ingresos.model');
-const Devolucion = require('../../model/devoluciones.model');
+const Egresos = require('../../model/egresos.model');
+const RemitoDevolucion = require('../../model/egresosDevoluciones.model');
 
 router.post('/', async (req, res) => {
 
-    log.info('GET all Ingresos y Devoluciones')
+    log.info('GET all Remitos y Devoluciones')
 
     const fechaDesde = req.query.fechaDesde;
     const fechaHasta = req.query.fechaHasta;
@@ -59,10 +59,10 @@ router.post('/', async (req, res) => {
             };
         }
 
-        const resultado_dev = await Devolucion.findAll({
+        const resultado_dev = await RemitoDevolucion.findAll({
             where: buscando
         })
-        const resultado_ing = await Ingreso.findAll({
+        const resultado_ing = await Egresos.findAll({
             where: buscando
         })
 
@@ -80,7 +80,7 @@ router.post('/', async (req, res) => {
                 numeroMostrar: mostrarDocumento(dev.dataValues.punto, dev.dataValues.numero)
             };
         });
-        
+
         const registros_ing = resultado_ing.map(ing => {
             let datosConvertidos;
             try {
@@ -90,7 +90,7 @@ router.post('/', async (req, res) => {
             }
             return {
                 ...ing.dataValues,
-                tipo: 'INGRESO',
+                tipo: 'REMITO',
                 datos: datosConvertidos,
                 numeroMostrar: mostrarDocumento(ing.dataValues.punto, ing.dataValues.numero)
             };
