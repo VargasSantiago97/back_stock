@@ -23,12 +23,13 @@ const articulos = require('./../routes/articulos.routes');
 const depositos = require('./../routes/depositos.routes');
 const ingresos = require('./../routes/ingresos.routes');
 const egresos = require('./../routes/egresos.routes');
-const devoluciones = require('./../routes/devoluciones.routes');
+const ingresosDevoluciones = require('./../routes/ingresosDevoluciones.routes');
 const egresosDevoluciones = require('./../routes/egresosDevoluciones.routes');
 const articulosAsociados = require('./../routes/articulosAsociados.routes');
 
 const operacionesIngresos = require('./../routes/operaciones/ingresos.routes');
 const operacionesEgresos = require('./../routes/operaciones/egresos.routes');
+const operacionesArticulosRemito = require('./../routes/operaciones/articulosRemito.routes');
 
 const pdf_ingresos = require('./../routes/pdf/ingreso.routes');
 const pdf_devoluciones = require('./../routes/pdf/devolucion.routes');
@@ -56,12 +57,14 @@ app.use('/articulos', usersVerifyToken, articulos);
 app.use('/depositos', usersVerifyToken, depositos);
 app.use('/ingresos', usersVerifyToken, ingresos);
 app.use('/egresos', usersVerifyToken, egresos);
-app.use('/devoluciones', usersVerifyToken, devoluciones);
+app.use('/devoluciones', usersVerifyToken, ingresosDevoluciones);
 app.use('/egresosDevoluciones', usersVerifyToken, egresosDevoluciones);
 app.use('/articulosAsociados', usersVerifyToken, articulosAsociados);
 
 app.use('/operaciones/ingresos', usersVerifyToken, operacionesIngresos);
 app.use('/operaciones/egresos', usersVerifyToken, operacionesEgresos);
+app.use('/operaciones/articulosRemito', usersVerifyToken, operacionesArticulosRemito);
+
 
 app.use('/pdf/ingresos', usersVerifyToken, pdf_ingresos);
 app.use('/pdf/devoluciones', usersVerifyToken, pdf_devoluciones);

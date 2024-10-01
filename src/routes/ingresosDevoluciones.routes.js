@@ -19,7 +19,7 @@ function fechaHoy() {
     return `${anio}-${mes}-${dia}`;
 }
 
-const Devolucion = require('../model/devoluciones.model');
+const Devolucion = require('../model/ingresosDevoluciones.model');
 
 router.get('/', async (req, res) => {
     log.info('GET all Devoluciones')

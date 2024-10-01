@@ -22,7 +22,7 @@ function fechaHoy() {
 const ArticuloAsociado = require('../../model/articulosAsociados.model');
 
 //DEVUELVE LOS PRODUCTOS DISPONIBLES PARA REMITAR
-router.get('/', async (req, res) => {
+router.post('/', async (req, res) => {
     log.info('Obtener articuloAsociado de documento')
 
     const id_documento = req.params.id_documento

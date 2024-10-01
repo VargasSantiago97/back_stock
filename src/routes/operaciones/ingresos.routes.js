@@ -24,7 +24,7 @@ function mostrarDocumento(pto, nro) {
 }
 
 const Ingreso = require('../../model/ingresos.model');
-const Devolucion = require('../../model/devoluciones.model');
+const Devolucion = require('../../model/ingresosDevoluciones.model');
 
 router.post('/', async (req, res) => {
 

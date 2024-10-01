@@ -31,7 +31,7 @@ function vencimientoFormato(venc) {
     }
 }
 
-const Devolucion = require('../../model/devoluciones.model');
+const Devolucion = require('../../model/ingresosDevoluciones.model');
 const ArticuloAsociado = require('../../model/articulosAsociados.model');
 const Deposito = require('../../model/depositos.model');
 const UnidadMedida = require('../../model/unidadMedidas.model');
