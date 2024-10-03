@@ -20,76 +20,102 @@ function fechaHoy() {
 }
 
 const ArticuloAsociado = require('../../model/articulosAsociados.model');
+const Ingresos = require('../../model/ingresos.model');
+const Egresos = require('../../model/egresos.model');
 
 //DEVUELVE LOS PRODUCTOS DISPONIBLES PARA REMITAR
 router.post('/', async (req, res) => {
-    log.info('Obtener articuloAsociado de documento')
+    log.info('Obtener articuloAsociado disponibles para remitar')
 
-    const id_documento = req.params.id_documento
+    const id_clientes = req.body.id_clientes
 
     try {
-        const resultado = await ArticuloAsociado.findAll({
+        var articulosDisponibles = []
+        //OBTENEMOS LOS INGRESOS
+        const resultado_ingresos = await Ingresos.findAll({
             where: {
                 estado: 1,
-                id_documento: id_documento
+                id_cliente: {
+                    [Op.in]: id_clientes
+                }
             }
         })
 
-        const articulosAsociados = await Promise.all(resultado.map(async articuloAsociado => {
-            let datosConvertidos;
-            try {
-                datosConvertidos = JSON.parse(articuloAsociado.dataValues.datos);
-            } catch (error) {
-                datosConvertidos = {};
-            }
-
-            const positivos = await ArticuloAsociado.findAll({
-                where: {
-                    estado: 1,
-                    id_original: articuloAsociado.dataValues.id,
-                    ajuste: 'positivo'
-                }
-            })
-
-            const negativos = await ArticuloAsociado.findAll({
-                where: {
-                    estado: 1,
-                    id_original: articuloAsociado.dataValues.id,
-                    ajuste: 'negativo'
-                }
-            })
-
-
-            const sumar = positivos.reduce((acc, artAsoc) => {
-                return acc + artAsoc.dataValues.cantidad
-            }, 0)
-            const sumar_uf = positivos.reduce((acc, artAsoc) => {
-                return acc + artAsoc.dataValues.cantidadUnidadFundamental
-            }, 0)
-
-            const restar = negativos.reduce((acc, artAsoc) => {
-                return acc + artAsoc.dataValues.cantidad
-            }, 0)
-            const restar_uf = negativos.reduce((acc, artAsoc) => {
-                return acc + artAsoc.dataValues.cantidadUnidadFundamental
-            }, 0)
-
-
-
+        const ingresos = resultado_ingresos.map(res_ing => {
             return {
-                ...articuloAsociado.dataValues,
-                datos: datosConvertidos,
-                salidas: restar,
-                entradas: sumar,
-                salidas_uf: restar_uf,
-                entradas_uf: sumar_uf
-            };
-        }));
+                ...res_ing.dataValues,
+                tipo: 'INGRESO'
+            }
+        })
+
+
+
+        //OBTENEMOS LOS INGRESOS POR OPERACIONES Y AGREGAMOS LOS ID A LOS id_ingresos
+        /*
+        */
+        const resultado_operaciones = [] //obtenemos las operaciones que sumen
+
+        const operaciones = resultado_operaciones.map(res_op => {
+            return {
+                ...res_op.dataValues,
+                tipo: 'OPERACIONES'
+            }
+        })
+
+        for (let documento of [...ingresos, ...operaciones]) {
+            const articulosAsociadosIngresos = await ArticuloAsociado.findAll({
+                where: {
+                    estado: 1,
+                    id_documento: documento.id
+                }
+            })
+
+
+            for (let artAsociado of articulosAsociadosIngresos) {
+                const positivos = await ArticuloAsociado.findAll({
+                    where: {
+                        estado: 1,
+                        id_original: artAsociado.dataValues.id,
+                        ajuste: 'positivo'
+                    }
+                })
+
+                const negativos = await ArticuloAsociado.findAll({
+                    where: {
+                        estado: 1,
+                        id_original: artAsociado.dataValues.id,
+                        ajuste: 'negativo'
+                    }
+                })
+
+                const sumar = positivos.reduce((acc, artAsoc) => {
+                    return acc + artAsoc.dataValues.cantidad
+                }, 0)
+                const sumar_uf = positivos.reduce((acc, artAsoc) => {
+                    return acc + artAsoc.dataValues.cantidadUnidadFundamental
+                }, 0)
+
+                const restar = negativos.reduce((acc, artAsoc) => {
+                    return acc + artAsoc.dataValues.cantidad
+                }, 0)
+                const restar_uf = negativos.reduce((acc, artAsoc) => {
+                    return acc + artAsoc.dataValues.cantidadUnidadFundamental
+                }, 0)
+
+                articulosDisponibles.push({
+                    ...documento,
+                    ...artAsociado.dataValues,
+                    cantidad: artAsociado.dataValues.cantidad - restar + sumar,
+                    cantidadUnidadFundamental: artAsociado.dataValues.cantidadUnidadFundamental - restar_uf + sumar_uf
+                })
+            }
+        }
 
         res.status(200).json({
             ok: true,
-            mensaje: articulosAsociados
+            mensaje: articulosDisponibles.filter(e => e.cantidad != 0)
         })
+
     }
     catch (err) {
         res.status(500).json({
