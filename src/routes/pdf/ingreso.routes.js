@@ -340,7 +340,8 @@ router.get('/:id/:cant', async (req, res) => {
                 try {
                     cantidad = articulo.cantidad.toLocaleString('es-ES', {
                         minimumFractionDigits: 2,
-                        maximumFractionDigits: 2
+                        maximumFractionDigits: 2,
+                        useGrouping: true
                     })
                 } catch {
                     cantidad = articulo.cantidad
