@@ -277,11 +277,18 @@ router.get('/buscar/siguiente/:ptoVta', async (req, res) => {
         })
     }
     catch (err) {
+        log.error(err)
+
+        res.status(200).json({
+            ok: true,
+            mensaje: 1
+        })
+        /*
         res.status(500).json({
             ok: false,
             mensaje: err,
             id: ''
-        })
+        })*/
     }
 });
 

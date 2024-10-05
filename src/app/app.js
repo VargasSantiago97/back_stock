@@ -32,6 +32,7 @@ const operacionesEgresos = require('./../routes/operaciones/egresos.routes');
 const operacionesArticulosRemito = require('./../routes/operaciones/articulosRemito.routes');
 
 const pdf_ingresos = require('./../routes/pdf/ingreso.routes');
+const pdf_remitos = require('./../routes/pdf/remito.routes');
 const pdf_devoluciones = require('./../routes/pdf/devolucion.routes');
 
 const xlsx_ingresos = require('./../routes/xlsx/ingresos.routes');
@@ -67,7 +68,9 @@ app.use('/operaciones/articulosRemito', usersVerifyToken, operacionesArticulosRe
 
 
 app.use('/pdf/ingresos', usersVerifyToken, pdf_ingresos);
+app.use('/pdf/remitos', usersVerifyToken, pdf_remitos);
 app.use('/pdf/devoluciones', usersVerifyToken, pdf_devoluciones);
+app.use('/pdf/remitoDevoluciones', usersVerifyToken, pdf_devoluciones);
 
 app.use('/xlsx/ingresos', usersVerifyToken, xlsx_ingresos);
 

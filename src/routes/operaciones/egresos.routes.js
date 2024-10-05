@@ -59,9 +59,11 @@ router.post('/', async (req, res) => {
             };
         }
 
-        const resultado_dev = await RemitoDevolucion.findAll({
-            where: buscando
-        })
+        //const resultado_dev = await RemitoDevolucion.findAll({
+        //    where: buscando
+        //})
+        const resultado_dev = []
+
         const resultado_ing = await Egresos.findAll({
             where: buscando
         })
