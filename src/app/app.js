@@ -30,10 +30,12 @@ const articulosAsociados = require('./../routes/articulosAsociados.routes');
 const operacionesIngresos = require('./../routes/operaciones/ingresos.routes');
 const operacionesEgresos = require('./../routes/operaciones/egresos.routes');
 const operacionesArticulosRemito = require('./../routes/operaciones/articulosRemito.routes');
+const operacionesStock = require('./../routes/operaciones/stock.routes');
 
 const pdf_ingresos = require('./../routes/pdf/ingreso.routes');
 const pdf_remitos = require('./../routes/pdf/remito.routes');
 const pdf_devoluciones = require('./../routes/pdf/devolucion.routes');
+const pdf_remitoDevoluciones = require('./../routes/pdf/remitoDevolucion.routes');
 
 const xlsx_ingresos = require('./../routes/xlsx/ingresos.routes');
 
@@ -65,12 +67,13 @@ app.use('/articulosAsociados', usersVerifyToken, articulosAsociados);
 app.use('/operaciones/ingresos', usersVerifyToken, operacionesIngresos);
 app.use('/operaciones/egresos', usersVerifyToken, operacionesEgresos);
 app.use('/operaciones/articulosRemito', usersVerifyToken, operacionesArticulosRemito);
+app.use('/operaciones/stock', usersVerifyToken, operacionesStock);
 
 
 app.use('/pdf/ingresos', usersVerifyToken, pdf_ingresos);
 app.use('/pdf/remitos', usersVerifyToken, pdf_remitos);
 app.use('/pdf/devoluciones', usersVerifyToken, pdf_devoluciones);
-app.use('/pdf/remitoDevoluciones', usersVerifyToken, pdf_devoluciones);
+app.use('/pdf/remitoDevoluciones', usersVerifyToken, pdf_remitoDevoluciones);
 
 app.use('/xlsx/ingresos', usersVerifyToken, xlsx_ingresos);
 
