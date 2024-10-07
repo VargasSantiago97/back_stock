@@ -188,5 +188,40 @@ router.delete('/:id', async (req, res) => {
     }
 });
 
+router.get('/buscar/alias/:alias', async (req, res) => {
+    log.info('GET one Rubro por alias')
+    const alias = req.params.alias
+
+    try {
+        const resultado = await Rubro.findOne({
+            where: {
+                alias: alias,
+                estado: 1
+            }
+        })
+
+        let datosConvertidos;
+        try {
+            datosConvertidos = JSON.parse(resultado.dataValues.datos);
+        } catch (error) {
+            datosConvertidos = {};
+        }
+
+        res.status(200).json({
+            ok: true,
+            mensaje: {
+                ...resultado.dataValues,
+                datos: datosConvertidos
+            }
+        })
+    }
+    catch (err) {
+        res.status(500).json({
+            ok: false,
+            mensaje: err,
+            id: ''
+        })
+    }
+});
 
 module.exports = router;

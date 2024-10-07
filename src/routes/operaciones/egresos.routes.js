@@ -25,6 +25,7 @@ function mostrarDocumento(pto, nro) {
 
 const Egresos = require('../../model/egresos.model');
 const RemitoDevolucion = require('../../model/egresosDevoluciones.model');
+const ArticuloAsociado = require('../../model/articulosAsociados.model');
 
 router.post('/', async (req, res) => {
 
@@ -59,10 +60,9 @@ router.post('/', async (req, res) => {
             };
         }
 
-        //const resultado_dev = await RemitoDevolucion.findAll({
-        //    where: buscando
-        //})
-        const resultado_dev = []
+        const resultado_dev = await RemitoDevolucion.findAll({
+            where: buscando
+        })
 
         const resultado_ing = await Egresos.findAll({
             where: buscando
@@ -101,6 +101,77 @@ router.post('/', async (req, res) => {
         res.status(200).json({
             ok: true,
             mensaje: [ ...registros_ing, ...registros_dev ]
+        })
+    }
+    catch (err) {
+        res.status(500).json({
+            ok: false,
+            mensaje: err,
+            id: ''
+        })
+    }
+});
+
+router.get('/devolucion/:id_documento', async (req, res) => {
+    log.info('Obtener articulos de remito disponibles para devolver')
+
+    const id_documento = req.params.id_documento
+
+    try {
+        const articulosAsociadosRemito = await ArticuloAsociado.findAll({
+            where: {
+                estado: 1,
+                id_documento: id_documento
+            }
+        })
+
+        const devoluciones = await RemitoDevolucion.findAll({
+            where: {
+                estado: 1,
+                id_asociado: id_documento
+            }
+        })
+
+        const devoluciones_id = devoluciones.map(dev => dev.id)
+
+        const articulosAsociadosDevoluciones = await ArticuloAsociado.findAll({
+            where: {
+                estado: 1,
+                id_documento: {
+                    [Op.in]: devoluciones_id
+                }
+            }
+        })
+
+        const articulosAsociados = articulosAsociadosRemito.map(articuloAsociado => {
+            let datosConvertidos;
+            try {
+                datosConvertidos = JSON.parse(articuloAsociado.dataValues.datos);
+            } catch (error) {
+                datosConvertidos = {};
+            }
+
+            const articulosRestar = articulosAsociadosDevoluciones.filter(e => e.dataValues.id_original == articuloAsociado.dataValues.id_original)
+
+            const restar = articulosRestar.reduce((acc, artAsoc) => {
+                return acc + artAsoc.dataValues.cantidad
+            }, 0)
+            const restar_uf = articulosRestar.reduce((acc, artAsoc) => {
+                return acc + artAsoc.dataValues.cantidadUnidadFundamental
+            }, 0)
+
+
+            return {
+                ...articuloAsociado.dataValues,
+                datos: datosConvertidos,
+                disponibleDevolver: articuloAsociado.dataValues.cantidad - restar,
+                disponibleDevolver_uf: articuloAsociado.dataValues.cantidadUnidadFundamental - restar_uf
+            };
+        });
+
+        res.status(200).json({
+            ok: true,
+            mensaje: articulosAsociados
         })
     }
     catch (err) {

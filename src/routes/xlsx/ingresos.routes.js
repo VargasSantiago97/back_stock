@@ -3,6 +3,7 @@ const router = express.Router();
 const fs = require('fs');
 
 const ExcelJS = require('exceljs');
+const Ingresos = require('../../model/ingresos.model');
 const ArticuloAsociado = require('../../model/articulosAsociados.model');
 const UnidadMedidas = require('../../model/unidadMedidas.model');
 const Rubros = require('../../model/rubros.model');
@@ -637,6 +638,7 @@ router.post('/datos', async (req, res) => {
         "OBSERVACIONES",
         "OBS SISTEMA",
         "TOTAL UNIDADES",
+        "DUEÑO",
         "RUBRO",
         "SUBRUBRO",
         "COD ARTICULO",
@@ -666,20 +668,33 @@ router.post('/datos', async (req, res) => {
             }
         })
 
-        const articulosAsociados = resultado.map(articuloAsociado => {
-            let datosConvertidos;
-            try {
-                datosConvertidos = JSON.parse(articuloAsociado.dataValues.datos);
-            } catch (error) {
-                datosConvertidos = {};
-            }
-            return {
-                ...articuloAsociado.dataValues,
-                datos: datosConvertidos
-            };
-        });
+        const articulosAsociados = resultado.map(articuloAsociado =>  articuloAsociado.dataValues );
 
-        articulosAsociados.forEach(articulosAsociado => {
+        for (const articulosAsociado of articulosAsociados){
+            var dueno = documento.razon_social
+
+            if(articulosAsociado.id_original){
+                const artOr = await ArticuloAsociado.findOne({
+                    where: {
+                        estado: 1,
+                        id: articulosAsociado.id_original
+                    }
+                })
+
+                if(artOr.documento == 'ingreso'){
+                    const docOr = await Ingresos.findOne({
+                        where: {
+                            estado: 1,
+                            id: artOr.id_documento
+                        }
+                    })
+
+                    dueno = docOr.razon_social
+                } else if (artOr.documento == 'operaciones') {
+
+                }
+            }
+
             worksheet.addRow([
                 documento.fecha,
                 documento.tipo,
@@ -697,6 +712,7 @@ router.post('/datos', async (req, res) => {
                 documento.observaciones_sistema,
                 documento.total_unidades,
 
+                dueno,
                 rubros[articulosAsociado.id_rubro] ? rubros[articulosAsociado.id_rubro] : articulosAsociado.id_rubro,
                 subrubros[articulosAsociado.id_subRubro] ? subrubros[articulosAsociado.id_subRubro] : articulosAsociado.id_subRubro,
                 articulosAsociado.codigo,
@@ -711,7 +727,7 @@ router.post('/datos', async (req, res) => {
                 articulosAsociado.vencimiento,
                 depositos[articulosAsociado.id_deposito] ? depositos[articulosAsociado.id_deposito] : articulosAsociado.id_deposito,
             ]);
-        });
+        }
     }
 
     // Especifica los encabezados para la respuesta
