@@ -35,6 +35,7 @@ const Devolucion = require('../../model/ingresosDevoluciones.model');
 const ArticuloAsociado = require('../../model/articulosAsociados.model');
 const Deposito = require('../../model/depositos.model');
 const UnidadMedida = require('../../model/unidadMedidas.model');
+const Users = require('../../model/users');
 
 const drawRoundedRect = (doc, x, y, width, height) => {
     doc.roundedRect(x, y, width, height, 3).stroke();
@@ -206,7 +207,7 @@ const addTransporte = (doc, datos) => {
 
 }
 
-const addPie = (doc, datos, pagina, cantidadPaginas) => {
+const addPie = (doc, datos, pagina, cantidadPaginas, createdAt) => {
 
     total_unidades = datos.total_unidades
     observaciones = datos.observaciones
@@ -250,6 +251,7 @@ const addPie = (doc, datos, pagina, cantidadPaginas) => {
 
     doc.fontSize(8).font('Helvetica')
         .text(`Pág ${pagina}/${cantidadPaginas}`, 0, 805, { align: 'center' })
+        .text(`Creado por: ${createdAt}`, 20, 805, { align: 'left' })
 }
 
 router.get('/:id/:cant', async (req, res) => {
@@ -284,6 +286,12 @@ router.get('/:id/:cant', async (req, res) => {
             return res.status(404).json({ message: 'Devolucion no encontrada' });
         }
 
+        const user = await Users.findOne({
+            where: {
+                id: ingreso.dataValues.createdBy
+            }
+        })
+
         const doc = new PDFDocument({ margin: 0, size: 'A4' });
 
         res.setHeader('Content-Type', 'application/pdf');
@@ -314,7 +322,7 @@ router.get('/:id/:cant', async (req, res) => {
             addEncabezado(doc, devolucion.dataValues, tiposCopias[copia] ?  tiposCopias[copia] : 'COPIA');
             addCliente(doc, devolucion.dataValues);
             addTransporte(doc, devolucion.dataValues);
-            addPie(doc, devolucion.dataValues, pagina, cantidadPaginas);
+            addPie(doc, devolucion.dataValues, pagina, cantidadPaginas, `${user.dataValues.alias} (${ingreso.dataValues.createdAt.toLocaleString()})`);
 
             const rowHeight = 16;
 
@@ -330,7 +338,7 @@ router.get('/:id/:cant', async (req, res) => {
                     addEncabezado(doc, devolucion.dataValues, tiposCopias[copia] ?  tiposCopias[copia] : 'COPIA');
                     addCliente(doc, devolucion.dataValues);
                     addTransporte(doc, devolucion.dataValues);
-                    addPie(doc, devolucion.dataValues, pagina, cantidadPaginas);
+                    addPie(doc, devolucion.dataValues, pagina, cantidadPaginas, `${user.dataValues.alias} (${ingreso.dataValues.createdAt.toLocaleString()})`);
 
                     cantidadRegistros = 1
                     y = tableTop + rowHeight

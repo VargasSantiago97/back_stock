@@ -46,15 +46,3 @@ User.init({
 })
 
 module.exports = User
-
-//async function testConnection() {
-//    try {
-//        await sequelize.authenticate();
-//        console.log('conectado');
-//    }
-//    catch (err) {
-//        console.error(err);
-//    }
-//}
-
-//testConnection()
