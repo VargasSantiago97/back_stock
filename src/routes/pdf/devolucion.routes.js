@@ -285,10 +285,9 @@ router.get('/:id/:cant', async (req, res) => {
         if (!devolucion) {
             return res.status(404).json({ message: 'Devolucion no encontrada' });
         }
-
         const user = await Users.findOne({
             where: {
-                id: ingreso.dataValues.createdBy
+                id: devolucion.dataValues.createdBy
             }
         })
 
@@ -322,7 +321,7 @@ router.get('/:id/:cant', async (req, res) => {
             addEncabezado(doc, devolucion.dataValues, tiposCopias[copia] ?  tiposCopias[copia] : 'COPIA');
             addCliente(doc, devolucion.dataValues);
             addTransporte(doc, devolucion.dataValues);
-            addPie(doc, devolucion.dataValues, pagina, cantidadPaginas, `${user.dataValues.alias} (${ingreso.dataValues.createdAt.toLocaleString()})`);
+            addPie(doc, devolucion.dataValues, pagina, cantidadPaginas, `${user ? user.dataValues.alias : ''} (${devolucion.dataValues.createdAt.toLocaleString()})`);
 
             const rowHeight = 16;
 
@@ -338,7 +337,7 @@ router.get('/:id/:cant', async (req, res) => {
                     addEncabezado(doc, devolucion.dataValues, tiposCopias[copia] ?  tiposCopias[copia] : 'COPIA');
                     addCliente(doc, devolucion.dataValues);
                     addTransporte(doc, devolucion.dataValues);
-                    addPie(doc, devolucion.dataValues, pagina, cantidadPaginas, `${user.dataValues.alias} (${ingreso.dataValues.createdAt.toLocaleString()})`);
+                    addPie(doc, devolucion.dataValues, pagina, cantidadPaginas, `${user ? user.dataValues.alias : ''} (${devolucion.dataValues.createdAt.toLocaleString()})`);
 
                     cantidadRegistros = 1
                     y = tableTop + rowHeight

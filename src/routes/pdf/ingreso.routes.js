@@ -322,7 +322,7 @@ router.get('/:id/:cant', async (req, res) => {
             addEncabezado(doc, ingreso.dataValues, tiposCopias[copia] ?  tiposCopias[copia] : 'COPIA');
             addCliente(doc, ingreso.dataValues);
             addTransporte(doc, ingreso.dataValues);
-            addPie(doc, ingreso.dataValues, pagina, cantidadPaginas, `${user.dataValues.alias} (${ingreso.dataValues.createdAt.toLocaleString()})`);
+            addPie(doc, ingreso.dataValues, pagina, cantidadPaginas, `${user ? user.dataValues.alias : ''} (${ingreso.dataValues.createdAt.toLocaleString()})`);
 
             const rowHeight = 16;
 
@@ -338,7 +338,7 @@ router.get('/:id/:cant', async (req, res) => {
                     addEncabezado(doc, ingreso.dataValues, tiposCopias[copia] ?  tiposCopias[copia] : 'COPIA');
                     addCliente(doc, ingreso.dataValues);
                     addTransporte(doc, ingreso.dataValues);
-                    addPie(doc, ingreso.dataValues, pagina, cantidadPaginas, `${user.dataValues.alias} (${ingreso.dataValues.createdAt.toLocaleString()})`);
+                    addPie(doc, ingreso.dataValues, pagina, cantidadPaginas, `${user ? user.dataValues.alias : ''} (${ingreso.dataValues.createdAt.toLocaleString()})`);
 
                     cantidadRegistros = 1
                     y = tableTop + rowHeight
