@@ -157,7 +157,7 @@ const addCliente = (doc, datos) => {
     doc.fontSize(10).font('Helvetica')
         .text('Señores:', 30, 140)
         .text('Dirección:', 30, 157)
-        .text('I.V.A.:', 30, 176)
+        .text('Autoriza:', 30, 176)
         .text('Contacto:', 30, 194)
 
         .text('Localidad:', 290, 157)
@@ -168,7 +168,7 @@ const addCliente = (doc, datos) => {
 
     drawTextWithBorder(doc, `(${datos.codigo}) ${datos.razon_social}`, 80, 140, 500, 14, 'left', 'Helvetica-Bold', 10)
     drawTextWithBorder(doc, datos.direccion, 80, 157, 205, 14, 'left', 'Helvetica', 10)
-    drawTextWithBorder(doc, '', 80, 176, 205, 14, 'left', 'Helvetica', 10)
+    drawTextWithBorder(doc, `${datos.autorizado_descripcion ? datos.autorizado_descripcion : ''}`, 80, 176, 205, 14, 'left', 'Helvetica', 10)
     drawTextWithBorder(doc, contacto, 80, 194, 205, 14, 'left', 'Helvetica', 10)
 
     drawTextWithBorder(doc, `${datos.localidad} (${datos.codigo_postal})`, 340, 157, 240, 14, 'left', 'Helvetica', 10)
