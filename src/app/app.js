@@ -32,6 +32,7 @@ const operacionesEgresos = require('./../routes/operaciones/egresos.routes');
 const operacionesArticulosRemito = require('./../routes/operaciones/articulosRemito.routes');
 const operacionesStock = require('./../routes/operaciones/stock.routes');
 const operacionesStockPorClientes = require('./../routes/operaciones/stockPorClientes.routes');
+const operacionesMovimientosPorArticulo = require('./../routes/operaciones/movimientosPorArticulo.routes');
 
 const pdf_ingresos = require('./../routes/pdf/ingreso.routes');
 const pdf_remitos = require('./../routes/pdf/remito.routes');
@@ -70,6 +71,7 @@ app.use('/operaciones/egresos', usersVerifyToken, operacionesEgresos);
 app.use('/operaciones/articulosRemito', usersVerifyToken, operacionesArticulosRemito);
 app.use('/operaciones/stock', usersVerifyToken, operacionesStock);
 app.use('/operaciones/stockPorClientes', usersVerifyToken, operacionesStockPorClientes);
+app.use('/operaciones/movimientosPorArticulo', usersVerifyToken, operacionesMovimientosPorArticulo);
 
 
 app.use('/pdf/ingresos', usersVerifyToken, pdf_ingresos);
