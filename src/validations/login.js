@@ -21,7 +21,7 @@ function fechaHoy() {
     return `${anio}-${mes}-${dia}`;
 }
 
-require('dotenv').config();
+require('dotenv').config({override: true});
 const secret = process.env.CLAVE_SECRETA
 
 router.post('/', async (req, res) => {

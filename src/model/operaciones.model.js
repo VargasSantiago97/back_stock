@@ -1,14 +1,15 @@
 const { Sequelize, DataTypes, Model } = require("sequelize");
 
-const sequelize = new Sequelize('stock', 'root', '', {
-    host: '127.0.0.1',
-    dialect: 'mysql',
-    port: 3306
+require('dotenv').config({override: true});
+const sequelize = new Sequelize(process.env.DB_NAME, process.env.DB_USER, process.env.DB_PASSWORD, {
+    host: process.env.DB_HOST,
+    dialect: process.env.DB_DIALECT,
+    port: process.env.DB_PORT
 })
 
-class Operacion extends Model {}
+class Operaciones extends Model {}
 
-Operacion.init({
+Operaciones.init({
     id: {
         type: DataTypes.UUID,
         defaultValue: DataTypes.UUIDV4,
@@ -34,110 +35,57 @@ Operacion.init({
         type: DataTypes.STRING,
         allowNull: true
     },
-    id_cliente: {
+    tipo: {
+        type: DataTypes.STRING,
+        allowNull: true
+    },
+
+
+    id_cliente_egreso: {
         type: DataTypes.STRING,
         allowNull: false
     },
-    codigo: {
+    codigo_egreso: {
         type: DataTypes.STRING,
         allowNull: true
     },
-    razon_social: {
+    razon_social_egreso: {
         type: DataTypes.STRING,
         allowNull: true
     },
-    cuit: {
+    cuit_egreso: {
         type: DataTypes.BIGINT,
         allowNull: true
     },
-    alias: {
+    alias_egreso: {
         type: DataTypes.STRING,
         allowNull: true
     },
-    direccion: {
+
+
+    id_cliente_ingreso: {
+        type: DataTypes.STRING,
+        allowNull: false
+    },
+    codigo_ingreso: {
         type: DataTypes.STRING,
         allowNull: true
     },
-    localidad: {
+    razon_social_ingreso: {
         type: DataTypes.STRING,
         allowNull: true
     },
-    provincia: {
-        type: DataTypes.STRING,
-        allowNull: true
-    },
-    codigo_postal: {
-        type: DataTypes.STRING,
-        allowNull: true
-    },
-    telefono: {
-        type: DataTypes.STRING,
-        allowNull: true
-    },
-    correo: {
-        type: DataTypes.STRING,
-        allowNull: true
-    },
-    id_autorizado: {
-        type: DataTypes.STRING,
-        allowNull: true
-    },
-    autorizado_descripcion: {
-        type: DataTypes.STRING,
-        allowNull: true
-    },
-    autorizado_documento: {
-        type: DataTypes.STRING,
-        allowNull: true
-    },
-    autorizado_contacto: {
-        type: DataTypes.STRING,
-        allowNull: true
-    },
-    id_transporte: {
-        type: DataTypes.STRING,
-        allowNull: true
-    },
-    transporte_transporte: {
-        type: DataTypes.STRING,
-        allowNull: true
-    },
-    transporte_cuit_transporte: {
+    cuit_ingreso: {
         type: DataTypes.BIGINT,
         allowNull: true
     },
-    transporte_chofer: {
+    alias_ingreso: {
         type: DataTypes.STRING,
         allowNull: true
     },
-    transporte_cuit_chofer: {
-        type: DataTypes.BIGINT,
-        allowNull: true
-    },
-    transporte_patente_chasis: {
-        type: DataTypes.STRING,
-        allowNull: true
-    },
-    transporte_patente_acoplado: {
-        type: DataTypes.STRING,
-        allowNull: true
-    },
-    id_establecimiento: {
-        type: DataTypes.STRING,
-        allowNull: true
-    },
-    establecimiento_descripcion: {
-        type: DataTypes.STRING,
-        allowNull: true
-    },
-    establecimiento_localidad: {
-        type: DataTypes.STRING,
-        allowNull: true
-    },
-    establecimiento_provincia: {
-        type: DataTypes.STRING,
-        allowNull: true
-    },
+
+
+
     observaciones: {
         type: DataTypes.STRING,
         allowNull: true
@@ -146,10 +94,7 @@ Operacion.init({
         type: DataTypes.STRING,
         allowNull: true
     },
-    total_unidades: {
-        type: DataTypes.STRING,
-        allowNull: true
-    },
+
 
     datos: {
         type: DataTypes.JSON
@@ -165,7 +110,7 @@ Operacion.init({
     }
 }, {
     sequelize,
-    modelName: 'Operacion'
+    modelName: 'Operaciones'
 })
 
-module.exports = Operacion
+module.exports = Operaciones

@@ -21,6 +21,7 @@ function fechaHoy() {
 
 const ArticuloAsociado = require('../../model/articulosAsociados.model');
 const Ingresos = require('../../model/ingresos.model');
+const Operaciones = require('../../model/operaciones.model')
 const Egresos = require('../../model/egresos.model');
 
 //DEVUELVE LOS PRODUCTOS DISPONIBLES PARA REMITAR
@@ -30,6 +31,7 @@ router.post('/', async (req, res) => {
     const id_clientes = req.body.id_clientes
 
     try {
+
         var articulosDisponibles = []
         //OBTENEMOS LOS INGRESOS
         const resultado_ingresos = await Ingresos.findAll({
@@ -53,7 +55,12 @@ router.post('/', async (req, res) => {
         //OBTENEMOS LOS INGRESOS POR OPERACIONES Y AGREGAMOS LOS ID A LOS id_ingresos
         /*
         */
-        const resultado_operaciones = [] //obtenemos las operaciones que sumen
+        const resultado_operaciones = await Operaciones.findAll({
+            where: {
+                estado: 1,
+                
+            }
+        })
 
         const operaciones = resultado_operaciones.map(res_op => {
             return {
