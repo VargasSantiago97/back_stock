@@ -33,6 +33,134 @@ router.post('/', async (req, res) => {
     try {
 
         var articulosDisponibles = []
+
+        //OBTENEMOS LOS INGRESOS
+        const resultado_ingresos = await Ingresos.findAll({
+            where: {
+                estado: 1,
+                id_cliente: {
+                    [Op.in]: id_clientes
+                }
+            }
+        })
+        const ingresos = resultado_ingresos.map(res_ing => {
+            return {
+                ...res_ing.dataValues,
+                tipo: 'INGRESO'
+            }
+        })
+
+
+        //OBTENEMOS LOS INGRESOS POR OPERACIONES Y AGREGAMOS LOS ID A LOS id_ingresos
+        const resultado_operaciones = await Operaciones.findAll({
+            where: {
+                estado: 1,
+                id_cliente_ingreso: {
+                    [Op.in]: id_clientes
+                }
+            }
+        })
+        const operaciones = resultado_operaciones.map(res_op => {
+            return {
+                ...res_op.dataValues,
+                id_cliente: res_op.dataValues.id_cliente_ingreso,
+                codigo: res_op.dataValues.codigo_ingreso,
+                razon_social: res_op.dataValues.razon_social_ingreso,
+                cuit: res_op.dataValues.cuit_ingreso,
+                alias: res_op.dataValues.alias_ingreso,
+                tipo: 'OPERACIONES'
+            }
+        })
+
+        const articulosAsociadosIngresos = await ArticuloAsociado.findAll({
+            where: {
+                estado: 1,
+                id_documento: {
+                    [Op.in]: [...ingresos.map(e => e.id), ...operaciones.map(e => e.id)]
+                },
+                ajuste: 'positivo',
+                id_original: '',
+            }
+        })
+
+        const articulosAsociadosRelacionar = await ArticuloAsociado.findAll({
+            where: {
+                estado: 1,
+                id_original: {
+                    [Op.in]: [...articulosAsociadosIngresos.map(e => e.id)]
+                },
+            }
+        })
+
+
+        for (let artAsociado of articulosAsociadosIngresos) {
+
+            const sumar = articulosAsociadosRelacionar
+                .filter(e => {
+                    return (e.id_original == artAsociado.dataValues.id) && (e.ajuste == 'positivo')
+                })
+                .reduce((acc, artAsoc) => {
+                    return acc + artAsoc.dataValues.cantidad
+                }, 0)
+            const sumar_uf = articulosAsociadosRelacionar
+                .filter(e => {
+                    return (e.id_original == artAsociado.dataValues.id) && (e.ajuste == 'positivo')
+                })
+                .reduce((acc, artAsoc) => {
+                    return acc + artAsoc.dataValues.cantidadUnidadFundamental
+                }, 0)
+
+
+            const restar = articulosAsociadosRelacionar
+                .filter(e => {
+                    return (e.id_original == artAsociado.dataValues.id) && (e.ajuste == 'negativo')
+                })
+                .reduce((acc, artAsoc) => {
+                    return acc + artAsoc.dataValues.cantidad
+                }, 0)
+            const restar_uf = articulosAsociadosRelacionar
+                .filter(e => {
+                    return (e.id_original == artAsociado.dataValues.id) && (e.ajuste == 'negativo')
+                })
+                .reduce((acc, artAsoc) => {
+                    return acc + artAsoc.dataValues.cantidadUnidadFundamental
+                }, 0)
+
+            const documento = [...ingresos, ...operaciones].find(e => e.id == artAsociado.dataValues.id_documento)
+
+            articulosDisponibles.push({
+                ...documento,
+                ...artAsociado.dataValues,
+                cantidad: artAsociado.dataValues.cantidad - restar + sumar,
+                cantidadUnidadFundamental: artAsociado.dataValues.cantidadUnidadFundamental - restar_uf + sumar_uf
+            })
+        }
+
+
+        res.status(200).json({
+            ok: true,
+            mensaje: articulosDisponibles.filter(e => e.cantidad != 0)
+        })
+
+    }
+    catch (err) {
+        res.status(500).json({
+            ok: false,
+            mensaje: err,
+            id: ''
+        })
+    }
+});
+
+
+router.post('/viejo', async (req, res) => {
+    log.info('Obtener articuloAsociado disponibles para remitar')
+
+    const id_clientes = req.body.id_clientes
+
+    try {
+
+        var articulosDisponibles = []
         //OBTENEMOS LOS INGRESOS
         const resultado_ingresos = await Ingresos.findAll({
             where: {
@@ -58,7 +186,7 @@ router.post('/', async (req, res) => {
         const resultado_operaciones = await Operaciones.findAll({
             where: {
                 estado: 1,
-                
+
             }
         })
 
