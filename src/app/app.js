@@ -68,7 +68,6 @@ app.use('/ingresos', usersVerifyToken, ingresos);
 app.use('/egresos', usersVerifyToken, egresos);
 app.use('/devoluciones', usersVerifyToken, ingresosDevoluciones);
 app.use('/egresosDevoluciones', usersVerifyToken, egresosDevoluciones);
-app.use('/operaciones', usersVerifyToken, operaciones);
 app.use('/articulosAsociados', usersVerifyToken, articulosAsociados);
 
 app.use('/operaciones/ingresos', usersVerifyToken, operacionesIngresos);
@@ -79,6 +78,7 @@ app.use('/operaciones/stock', usersVerifyToken, operacionesStock);
 app.use('/operaciones/stockPorClientes', usersVerifyToken, operacionesStockPorClientes);
 app.use('/operaciones/movimientosPorArticulo', usersVerifyToken, operacionesMovimientosPorArticulo);
 
+app.use('/operaciones', usersVerifyToken, operaciones);
 
 app.use('/pdf/ingresos', usersVerifyToken, pdf_ingresos);
 app.use('/pdf/remitos', usersVerifyToken, pdf_remitos);

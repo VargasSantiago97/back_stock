@@ -27,6 +27,8 @@ const Devolucion = require('../../model/ingresosDevoluciones.model');
 const Egresos = require('../../model/egresos.model');
 const RemitoDevolucion = require('../../model/egresosDevoluciones.model');
 const ArticuloAsociado = require('../../model/articulosAsociados.model');
+const Operaciones = require('../../model/operaciones.model');
+
 const UnidadMedida = require('../../model/unidadMedidas.model');
 const Deposito = require('../../model/depositos.model');
 const Cliente = require('../../model/clientes.model');
@@ -411,251 +413,71 @@ router.get('/', async (req, res) => {
 
             resp.cantidad += artAsoc.cantidad
         }
-        /*
 
-        const articulosAsociadosEgresos = await ArticuloAsociado.findAll({
-            where: {
-                estado: 1,
-                id_documento: {
-                    [Op.in]: [...ids_rem, ...ids_remDev]
-                },
-                id_original: {
-                    [Op.in]: articulosAsociadosIngresos.map(f => f.dataValues.id)
-                },
-                documento: {
-                    [Op.in]: ['remito', 'remito_devolucion']
-                },
-            }
-        })
-        for (let artAsoc of articulosAsociadosEgresos) {
-            if (!cliente.datos.some(art => art.id_articulo == artAsoc.id_articulo)) {
-                cliente.datos.push({
-                    id_articulo: artAsoc.id_articulo,
-                    codigo: artAsoc.codigo,
-                    descripcion: artAsoc.descripcion,
-                    um: unidadMedidas[artAsoc.id_unidadMedida] ? unidadMedidas[artAsoc.id_unidadMedida] : '-',
-                    umf: artAsoc.unidadFundamental,
-
-                    ingresos: 0,
-                    ingresos_uf: 0,
-
-                    salidas: 0,
-                    salidas_uf: 0,
-
-                    stock: 0,
-                    stock_uf: 0,
-
-                    otros_destinos: 0,
-                    otros_destinos_uf: 0,
-
-                    stock_fisico: 0,
-                    stock_fisico_uf: 0,
-
-                    otros_origenes: 0,
-                    otros_origenes_uf: 0,
-
-                    stock_real: 0,
-                    stock_real_uf: 0
-                })
-            }
-
-            var registro = cliente.datos.find(e => e.id_articulo == artAsoc.id_articulo)
-
-
-            if (artAsoc.documento == 'remito') {
-                registro.salidas += artAsoc.cantidad
-                registro.salidas_uf += artAsoc.cantidadUnidadFundamental
-
-                registro.stock -= artAsoc.cantidad
-                registro.stock_uf -= artAsoc.cantidadUnidadFundamental
-
-                registro.stock_fisico -= artAsoc.cantidad
-                registro.stock_fisico_uf -= artAsoc.cantidadUnidadFundamental
-
-                registro.stock_real -= artAsoc.cantidad
-                registro.stock_real_uf -= artAsoc.cantidadUnidadFundamental
-            }
-            if (artAsoc.documento == 'remito_devolucion') {
-                registro.salidas -= artAsoc.cantidad
-                registro.salidas_uf -= artAsoc.cantidadUnidadFundamental
-
-                registro.stock += artAsoc.cantidad
-                registro.stock_uf += artAsoc.cantidadUnidadFundamental
-
-                registro.stock_fisico += artAsoc.cantidad
-                registro.stock_fisico_uf += artAsoc.cantidadUnidadFundamental
-
-                registro.stock_real += artAsoc.cantidad
-                registro.stock_real_uf += artAsoc.cantidadUnidadFundamental
-            }
-        }
-
-        //otros destinos
-        var buscandoOD = {
+    
+        //BUSCAMOS OPERACIONES
+        var buscandoOp = {
             estado: 1,
-            id_cliente: {
-                [Op.notIn]: [e.dataValues.id]
+            [Op.or]: {
+                id_cliente_ingreso: cliente,
+                id_cliente_egreso: cliente
             }
         }
 
         if (fechaDesde && fechaHasta) {
-            buscandoOD.fechafecha = {
+            buscandoOp.fechafecha = {
                 [Op.between]: [new Date(fechaDesde), new Date(fechaHasta)]
             };
         } else if (fechaDesde) {
-            buscandoOD.fechafecha = {
+            buscandoOp.fechafecha = {
                 [Op.gte]: new Date(fechaDesde)
             };
         } else if (fechaHasta) {
-            buscandoOD.fechafecha = {
+            buscandoOp.fechafecha = {
                 [Op.lte]: new Date(fechaHasta)
             };
         }
 
-
-        const resultado_remOD = await Egresos.findAll({
-            where: buscandoOD
-        })
-        const resultado_remDevOD = await RemitoDevolucion.findAll({
-            where: buscandoOD
+        const resultado_operaciones = await Operaciones.findAll({
+            where: buscandoOp
         })
 
-        const ids_remOD = resultado_remOD.map(e => e.dataValues.id)
-        const ids_remODDev = resultado_remDevOD.map(e => e.dataValues.id)
-
-
-        const articulosAsociadosOtrosDestinos = await ArticuloAsociado.findAll({
+        const articulosAsociadosOperaciones = await ArticuloAsociado.findAll({
             where: {
-                estado: 1,
                 id_documento: {
-                    [Op.in]: [...ids_remOD, ...ids_remODDev]
+                    [Op.in]: resultado_operaciones.map(e => e.id)
                 },
-                id_original: {
-                    [Op.in]: articulosAsociadosIngresos.map(f => f.dataValues.id)
+                [Op.or]: {
+                    id_original: {
+                        [Op.in]: ids_articulosIngreso
+                    },
+                    id: {
+                        [Op.in]: ids_articulosIngreso
+                    }
                 },
-                documento: {
-                    [Op.in]: ['remito', 'remito_devolucion']
-                },
+                estado: 1
             }
         })
-        for (let artAsoc of articulosAsociadosOtrosDestinos) {
-            if (!cliente.datos.some(art => art.id_articulo == artAsoc.id_articulo)) {
-                cliente.datos.push({
-                    id_articulo: artAsoc.id_articulo,
-                    codigo: artAsoc.codigo,
-                    descripcion: artAsoc.descripcion,
-                    um: unidadMedidas[artAsoc.id_unidadMedida] ? unidadMedidas[artAsoc.id_unidadMedida] : '-',
-                    umf: artAsoc.unidadFundamental,
 
-                    ingresos: 0,
-                    ingresos_uf: 0,
+        for (let artAsoc of articulosAsociadosOperaciones) {
+            const operaciones = resultado_operaciones.find(e => e.id == artAsoc.id_documento)
 
-                    salidas: 0,
-                    salidas_uf: 0,
-
-                    stock: 0,
-                    stock_uf: 0,
-
-                    otros_destinos: 0,
-                    otros_destinos_uf: 0,
-
-                    stock_fisico: 0,
-                    stock_fisico_uf: 0,
-
-                    otros_origenes: 0,
-                    otros_origenes_uf: 0,
-
-                    stock_real: 0,
-                    stock_real_uf: 0
+            if (!respuesta.some(e => e.id_documento == artAsoc.id_documento)) {
+                respuesta.push({
+                    tipo: 'OPERACION',
+                    numero: mostrarDocumento(operaciones.punto, operaciones.numero),
+                    fecha: operaciones.fecha,
+                    cliente: operaciones.tipo.toUpperCase(),
+                    cantidad: 0, //
+                    unidad_medida: unidadMedidas[artAsoc.id_unidadMedida], //
+                    id_documento: artAsoc.id_documento
                 })
             }
+            var resp = respuesta.find(e => e.id_documento == artAsoc.id_documento)
 
-            var registro = cliente.datos.find(e => e.id_articulo == artAsoc.id_articulo)
-
-
-            if (artAsoc.documento == 'remito') {
-                registro.otros_destinos += artAsoc.cantidad
-                registro.otros_destinos_uf += artAsoc.cantidadUnidadFundamental
-
-                registro.stock_fisico -= artAsoc.cantidad
-                registro.stock_fisico_uf -= artAsoc.cantidadUnidadFundamental
-            }
-            if (artAsoc.documento == 'remito_devolucion') {
-                registro.otros_destinos -= artAsoc.cantidad
-                registro.otros_destinos_uf -= artAsoc.cantidadUnidadFundamental
-
-                registro.stock_fisico += artAsoc.cantidad
-                registro.stock_fisico_uf += artAsoc.cantidadUnidadFundamental
-            }
+            resp.cantidad += artAsoc.cantidad
         }
 
-
-
-        //otros origenes
-        buscandoArticulos.id_documento = {
-            [Op.in]: [...ids_rem, ...ids_remDev]
-        }
-        buscandoArticulos.id_original = {
-            [Op.notIn]: ids_articulosIngreso
-        }
-
-        const articulosAsociadosOtrosOrigenes = await ArticuloAsociado.findAll({
-            where: buscandoArticulos
-        })
-
-        for (let artAsoc of articulosAsociadosOtrosOrigenes) {
-            if (!cliente.datos.some(art => art.id_articulo == artAsoc.id_articulo)) {
-                cliente.datos.push({
-                    id_articulo: artAsoc.id_articulo,
-                    codigo: artAsoc.codigo,
-                    descripcion: artAsoc.descripcion,
-                    um: unidadMedidas[artAsoc.id_unidadMedida] ? unidadMedidas[artAsoc.id_unidadMedida] : '-',
-                    umf: artAsoc.unidadFundamental,
-
-                    ingresos: 0,
-                    ingresos_uf: 0,
-
-                    salidas: 0,
-                    salidas_uf: 0,
-
-                    stock: 0,
-                    stock_uf: 0,
-
-                    otros_destinos: 0,
-                    otros_destinos_uf: 0,
-
-                    stock_fisico: 0,
-                    stock_fisico_uf: 0,
-
-                    otros_origenes: 0,
-                    otros_origenes_uf: 0,
-
-                    stock_real: 0,
-                    stock_real_uf: 0
-                })
-            }
-
-            var registro = cliente.datos.find(e => e.id_articulo == artAsoc.id_articulo)
-
-
-            if (artAsoc.documento == 'remito') {
-                registro.otros_origenes += artAsoc.cantidad
-                registro.otros_origenes_uf += artAsoc.cantidadUnidadFundamental
-
-                registro.stock_real -= artAsoc.cantidad
-                registro.stock_real_uf -= artAsoc.cantidadUnidadFundamental
-            }
-            if (artAsoc.documento == 'remito_devolucion') {
-                registro.otros_origenes -= artAsoc.cantidad
-                registro.otros_origenes_uf -= artAsoc.cantidadUnidadFundamental
-
-                registro.stock_real += artAsoc.cantidad
-                registro.stock_real_uf += artAsoc.cantidadUnidadFundamental
-            }
-
-
-            //respuesta.push(cliente)
-        } */
 
         res.status(200).json({
             ok: true,
