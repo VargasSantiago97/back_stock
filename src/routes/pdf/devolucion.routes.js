@@ -158,13 +158,13 @@ const addCliente = (doc, datos) => {
         .text('Señores:', 30, 140)
         .text('Dirección:', 30, 157)
         .text('Autoriza:', 30, 176)
-        .text('Contacto:', 30, 194)
+        .text('Cont/Est:', 30, 194)
 
         .text('Localidad:', 290, 157)
         .text('Provincia:', 290, 176)
         .text('C.U.I.T:', 290, 194);
 
-    const contacto = (datos.telefono ? datos.telefono : '') + ((datos.telefono && datos.correo) ? '/' : '') + (datos.correo ? datos.correo : '')
+    const contacto = (datos.telefono ? datos.telefono : '') + ((datos.telefono && datos.correo) ? '/' : '') + (datos.correo ? datos.correo : '') + ((datos.telefono || datos.correo) && datos.establecimiento_descripcion ? '/' : '') + (datos.establecimiento_descripcion ? datos.establecimiento_descripcion : '')
 
     drawTextWithBorder(doc, `(${datos.codigo}) ${datos.razon_social}`, 80, 140, 500, 14, 'left', 'Helvetica-Bold', 10)
     drawTextWithBorder(doc, datos.direccion, 80, 157, 205, 14, 'left', 'Helvetica', 10)
@@ -313,12 +313,12 @@ router.get('/:id/:cant', async (req, res) => {
         })
 
         for (let copia = 0; copia < cantidadCopias; copia++) {
-            if(copia) doc.addPage();
+            if (copia) doc.addPage();
 
             var pagina = 1
             let cantidadPaginas = Math.ceil(Articulos.length / 19);
 
-            addEncabezado(doc, devolucion.dataValues, tiposCopias[copia] ?  tiposCopias[copia] : 'COPIA');
+            addEncabezado(doc, devolucion.dataValues, tiposCopias[copia] ? tiposCopias[copia] : 'COPIA');
             addCliente(doc, devolucion.dataValues);
             addTransporte(doc, devolucion.dataValues);
             addPie(doc, devolucion.dataValues, pagina, cantidadPaginas, `${user ? user.dataValues.alias : ''} (${devolucion.dataValues.createdAt.toLocaleString()})`);
@@ -334,7 +334,7 @@ router.get('/:id/:cant', async (req, res) => {
                     pagina++;
 
                     doc.addPage();
-                    addEncabezado(doc, devolucion.dataValues, tiposCopias[copia] ?  tiposCopias[copia] : 'COPIA');
+                    addEncabezado(doc, devolucion.dataValues, tiposCopias[copia] ? tiposCopias[copia] : 'COPIA');
                     addCliente(doc, devolucion.dataValues);
                     addTransporte(doc, devolucion.dataValues);
                     addPie(doc, devolucion.dataValues, pagina, cantidadPaginas, `${user ? user.dataValues.alias : ''} (${devolucion.dataValues.createdAt.toLocaleString()})`);

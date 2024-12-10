@@ -27,6 +27,8 @@ const Ingreso = require('../../model/ingresos.model');
 const Devolucion = require('../../model/ingresosDevoluciones.model');
 const Egresos = require('../../model/egresos.model');
 const RemitoDevolucion = require('../../model/egresosDevoluciones.model');
+const Operaciones = require('../../model/operaciones.model');
+
 const ArticuloAsociado = require('../../model/articulosAsociados.model');
 const UnidadMedida = require('../../model/unidadMedidas.model');
 
@@ -36,7 +38,6 @@ router.post('/', async (req, res) => {
 
     const fechaDesde = req.body.fechaDesde;
     const fechaHasta = req.body.fechaHasta;
-    const clientes = req.body.clientes
     const depositos = req.body.depositos
     const articulos = req.body.articulos
     const rubros = req.body.rubros
@@ -47,11 +48,8 @@ router.post('/', async (req, res) => {
         var buscando = {
             estado: 1
         }
-
-        if (clientes && clientes.length > 0) {
-            buscando.id_cliente = {
-                [Op.in]: clientes
-            };
+        var buscandoOperaciones = {
+            estado: 1
         }
 
         if (fechaDesde && fechaHasta) {
@@ -80,11 +78,15 @@ router.post('/', async (req, res) => {
         const resultado_remDev = await RemitoDevolucion.findAll({
             where: buscando
         })
+        const resultado_op = await Operaciones.findAll({
+            where: buscandoOperaciones
+        })
 
         const ids_ing = resultado_ing.map(e => e.dataValues.id)
         const ids_dev = resultado_dev.map(e => e.dataValues.id)
         const ids_rem = resultado_rem.map(e => e.dataValues.id)
         const ids_remDev = resultado_remDev.map(e => e.dataValues.id)
+        const ids_op = resultado_op.map(e => e.dataValues.id)
 
         var unidadMedidas = {}
         const unidadesMedidas = await UnidadMedida.findAll({
@@ -97,7 +99,7 @@ router.post('/', async (req, res) => {
         var buscandoArticulos = {
             estado: 1,
             id_documento: {
-                [Op.in]: [ ...ids_ing , ...ids_dev , ...ids_rem , ...ids_remDev ]
+                [Op.in]: [ ...ids_ing , ...ids_dev , ...ids_rem , ...ids_remDev, ...ids_op ]
             }
         }
 
@@ -203,7 +205,20 @@ router.post('/', async (req, res) => {
             }
             
             if(artAsoc.documento == 'operaciones'){
-
+                if(artAsoc.ajuste == 'positivo'){
+                    registro.operaciones_entradas += artAsoc.cantidad
+                    registro.operaciones_entradas_uf += artAsoc.cantidadUnidadFundamental
+    
+                    registro.stock += artAsoc.cantidad
+                    registro.stock_uf += artAsoc.cantidadUnidadFundamental
+                }
+                if(artAsoc.ajuste == 'negativo'){
+                    registro.operaciones_salidas += artAsoc.cantidad
+                    registro.operaciones_salidas_uf += artAsoc.cantidadUnidadFundamental
+    
+                    registro.stock -= artAsoc.cantidad
+                    registro.stock_uf -= artAsoc.cantidadUnidadFundamental
+                }
             }
         }
 

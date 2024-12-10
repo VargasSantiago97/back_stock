@@ -27,12 +27,14 @@ const ArticuloAsociado = require('../../model/articulosAsociados.model');
 const UnidadMedida = require('../../model/unidadMedidas.model');
 const Cliente = require('../../model/clientes.model');
 
+
 router.post('/', async (req, res) => {
 
     log.info('GET stock por clientes')
 
     const fechaDesde = req.body.fechaDesde;
     const fechaHasta = req.body.fechaHasta;
+
     const clientes = req.body.clientes
     const depositos = req.body.depositos
     const articulos = req.body.articulos
@@ -65,18 +67,17 @@ router.post('/', async (req, res) => {
             where: buscandoCliente
         })
 
-        for (let e of resultado_clientes) {
+        for (let resultado_cliente of resultado_clientes) {
             var cliente = {
-                id_cliente: e.dataValues.id,
-                cliente: e.dataValues.razon_social,
+                id_cliente: resultado_cliente.dataValues.id,
+                cliente: resultado_cliente.dataValues.razon_social,
                 datos: []
             }
-
 
             //BUSCAMOS LOS INGRESOS
             var buscando = {
                 estado: 1,
-                id_cliente: e.dataValues.id,
+                id_cliente: resultado_cliente.dataValues.id,
             }
 
             if (fechaDesde && fechaHasta) {
@@ -299,7 +300,7 @@ router.post('/', async (req, res) => {
             var buscandoOD = {
                 estado: 1,
                 id_cliente: {
-                    [Op.notIn]: [e.dataValues.id]
+                    [Op.notIn]: [resultado_cliente.dataValues.id]
                 }
             }
 
@@ -328,7 +329,7 @@ router.post('/', async (req, res) => {
             const ids_remOD = resultado_remOD.map(e => e.dataValues.id)
             const ids_remODDev = resultado_remDevOD.map(e => e.dataValues.id)
 
-            
+
             const articulosAsociadosOtrosDestinos = await ArticuloAsociado.findAll({
                 where: {
                     estado: 1,
@@ -464,7 +465,7 @@ router.post('/', async (req, res) => {
 
         res.status(200).json({
             ok: true,
-            mensaje: respuesta.filter(e => e.datos.length )
+            mensaje: respuesta.filter(e => e.datos.length)
         })
     }
     catch (err) {
