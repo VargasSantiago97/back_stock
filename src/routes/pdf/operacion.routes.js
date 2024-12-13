@@ -263,7 +263,7 @@ router.get('/:id/:cant', async (req, res) => {
 
         var separadorEntradas = {
             codigo: '',
-            descripcion: '______________________ ENTRADAS DE MERCADERIA: ______________________',
+            descripcion: '______________________ MERCADERIA A ACREDITAR DEL STOCK: ______________________',
             cantidad: '',
             unidad: '',
             deposito: '',
@@ -273,7 +273,7 @@ router.get('/:id/:cant', async (req, res) => {
         }
         var separadorSalidas = {
             codigo: '',
-            descripcion: '______________________ SALIDAS DE MERCADERIA: ______________________',
+            descripcion: '______________________ MERCADERIA A DESCONTAR EN EL STOCK: ______________________',
             cantidad: '',
             unidad: '',
             deposito: '',

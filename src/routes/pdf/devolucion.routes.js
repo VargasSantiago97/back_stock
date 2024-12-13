@@ -121,7 +121,7 @@ const addEncabezado = (doc, datos, copia) => {
     var fecha_ent = datos.fecha.split('-')
     fecha = `${fecha_ent[2]}/${fecha_ent[1]}/${fecha_ent[0]}`
 
-    doc.fontSize(14).text('DEVOLUCIÓN DE MERCADERIA', 350, 30);
+    doc.fontSize(14).text('DEVOLUCIÓN DE INGRESO', 350, 30);
     doc.fontSize(16).font('Helvetica-Bold').text(`N°: ${numero}`, 350, 50, {
         font: 'Courier-Bold'
     })

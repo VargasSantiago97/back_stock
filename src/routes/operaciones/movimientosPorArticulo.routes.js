@@ -1132,6 +1132,7 @@ router.get('/', async (req, res) => {
 
             const mercaderiaPropia = await verificarMercaderiaPropia(artAsoc.dataValues, documento)
 
+
             articulosAsociados.push({ ...artAsoc.dataValues, ...documento, mercaderiaPropia })
         }
 
