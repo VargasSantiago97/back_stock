@@ -1150,10 +1150,19 @@ router.get('/', async (req, res) => {
 
             var resp = respuesta.find(e => e.id_documento == datos.id_documento)
 
-            if(datos.ajuste == 'positivo'){
-                resp.cantidad += datos.cantidad
+            if(tipoDocumento == 'OPERACIONES'){
+                if(datos.ajuste == 'positivo' && datos.id_cliente_ingreso == cliente){
+                    resp.cantidad += datos.cantidad
+                }
+                if(datos.ajuste == 'negativo' && datos.id_cliente_egreso == cliente){
+                    resp.cantidad -= datos.cantidad
+                }
             } else {
-                resp.cantidad -= datos.cantidad
+                if(datos.ajuste == 'positivo'){
+                    resp.cantidad += datos.cantidad
+                } else {
+                    resp.cantidad -= datos.cantidad
+                }
             }
         }
 
