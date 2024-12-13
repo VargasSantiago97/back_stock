@@ -953,6 +953,308 @@ router.get('/viejo2', async (req, res) => {
     }
 });
 
+router.get('/viejo3', async (req, res) => {
+
+    log.info('GET movimientos por articulos')
+
+    const cliente = req.query.cliente;
+    const articulo = req.query.articulo;
+    const fechaDesde = req.query.fechaDesde;
+    const fechaHasta = req.query.fechaHasta;
+
+    try {
+        var respuesta = []
+
+        var unidadMedidas = {}
+        const unidadesMedidas = await UnidadMedida.findAll({
+            where: {
+                estado: 1
+            }
+        })
+        unidadesMedidas.forEach(um => { unidadMedidas[um.dataValues.id] = um.dataValues.alias });
+
+        var depositos = {}
+        const depositoss = await Deposito.findAll({
+            where: {
+                estado: 1
+            }
+        })
+        depositoss.forEach(dep => { depositos[dep.dataValues.id] = dep.dataValues.alias });
+
+        //BUSCAMOS LOS INGRESOS DEL CLIENTE
+        var buscando = {
+            estado: 1
+        }
+
+        if (fechaDesde && fechaHasta) {
+            buscando.fechafecha = {
+                [Op.between]: [new Date(fechaDesde), new Date(fechaHasta)]
+            };
+        } else if (fechaDesde) {
+            buscando.fechafecha = {
+                [Op.gte]: new Date(fechaDesde)
+            };
+        } else if (fechaHasta) {
+            buscando.fechafecha = {
+                [Op.lte]: new Date(fechaHasta)
+            };
+        }
+
+        const INGRESOS = await Ingreso.findAll({
+            where: buscando
+        })
+
+        const DEVOLUCIONES = await Devolucion.findAll({
+            where: buscando
+        })
+
+        const REMITOS = await Egresos.findAll({
+            where: buscando
+        })
+
+        const REMITOS_DEVOLUCIONES = await RemitoDevolucion.findAll({
+            where: buscando
+        })
+
+        const OPERACIONES = await Operaciones.findAll({
+            where: buscando
+        })
+
+        const ArticulosAsociados = await ArticuloAsociado.findAll({
+            where: {
+                estado: 1,
+                id_articulo: articulo,
+                id_documento: {
+                    [Op.in]: [...INGRESOS.map(e => e.dataValues.id), ...DEVOLUCIONES.map(e => e.dataValues.id), ...REMITOS.map(e => e.dataValues.id), ...REMITOS_DEVOLUCIONES.map(e => e.dataValues.id), ...OPERACIONES.map(e => e.dataValues.id),]
+                }
+            }
+        })
+
+        const buscarDocumento = async (artAsoc) => {
+            let datosDocumento = undefined
+            if (artAsoc.documento == 'ingreso') {
+                if (INGRESOS.some(e => e.dataValues.id == artAsoc.id_documento)) {
+                    datosDocumento = INGRESOS.find(e => e.dataValues.id == artAsoc.id_documento)
+                } else {
+                    datosDocumento = await Ingreso.findOne({
+                        where: {
+                            estado: 1,
+                            id: artAsoc.id_documento
+                        }
+                    })
+                }
+            }
+            if (artAsoc.documento == 'ingreso_devolucion') {
+                if (DEVOLUCIONES.some(e => e.dataValues.id == artAsoc.id_documento)) {
+                    datosDocumento = DEVOLUCIONES.find(e => e.dataValues.id == artAsoc.id_documento)
+                } else {
+                    datosDocumento = await Devolucion.findOne({
+                        where: {
+                            estado: 1,
+                            id: artAsoc.id_documento
+                        }
+                    })
+                }
+            }
+            if (artAsoc.documento == 'operaciones') {
+                if (OPERACIONES.some(e => e.dataValues.id == artAsoc.id_documento)) {
+                    datosDocumento = OPERACIONES.find(e => e.dataValues.id == artAsoc.id_documento)
+                } else {
+                    datosDocumento = await Operaciones.findOne({
+                        where: {
+                            estado: 1,
+                            id: artAsoc.id_documento
+                        }
+                    })
+                }
+            }
+            if (artAsoc.documento == 'remito') {
+                if (REMITOS.some(e => e.dataValues.id == artAsoc.id_documento)) {
+                    datosDocumento = REMITOS.find(e => e.dataValues.id == artAsoc.id_documento)
+                } else {
+                    datosDocumento = await Egresos.findOne({
+                        where: {
+                            estado: 1,
+                            id: artAsoc.id_documento
+                        }
+                    })
+                }
+            }
+            if (artAsoc.documento == 'remito_devolucion') {
+                if (REMITOS_DEVOLUCIONES.some(e => e.dataValues.id == artAsoc.id_documento)) {
+                    datosDocumento = REMITOS_DEVOLUCIONES.find(e => e.dataValues.id == artAsoc.id_documento)
+                } else {
+                    datosDocumento = await RemitoDevolucion.findOne({
+                        where: {
+                            estado: 1,
+                            id: artAsoc.id_documento
+                        }
+                    })
+                }
+            }
+
+            return datosDocumento ? datosDocumento.dataValues : datosDocumento
+        }
+
+        const verificarMercaderiaPropia = async (artAsoc, documento) => {
+            //si no tiene id original, es un ingreso. Por lo tanto es propia
+            if (!artAsoc.id_original) {
+                return true
+            }
+
+            //buscamos articuloOriginal en memoria, sino en DB
+            var articuloOriginal = {}
+            if (ArticulosAsociados.some(e => e.dataValues.id == artAsoc.id_original)) {
+                articuloOriginal = ArticulosAsociados.find(e => e.dataValues.id == artAsoc.id_original)
+            } else {
+                articuloOriginal = await ArticuloAsociado.findOne({
+                    where: {
+                        estado: 1,
+                        id: artAsoc.id_original
+                    }
+                })
+            }
+
+            //buscamos el documento del articuloOriginal
+            var documentoOriginal = buscarDocumento(articuloOriginal)
+
+            if (articuloOriginal.dataValues.documento == 'operaciones') {
+                return documentoOriginal.id_cliente_ingreso == cliente
+            } else {
+                return documentoOriginal.id_cliente == cliente
+            }
+        }
+
+        let articulosAsociados = []
+        for (let artAsoc of ArticulosAsociados) {
+
+            const documento = await buscarDocumento(artAsoc.dataValues)
+
+            const mercaderiaPropia = await verificarMercaderiaPropia(artAsoc.dataValues, documento)
+
+
+            articulosAsociados.push({ ...artAsoc.dataValues, ...documento, mercaderiaPropia })
+        }
+
+        const agregarArticuloRespuesta = (tipoDocumento, datos) => {
+            if (!respuesta.some(e => e.id_documento == datos.id_documento)) {
+                respuesta.push({
+                    tipo: tipoDocumento,
+                    numero: mostrarDocumento(datos.punto, datos.numero),
+                    fecha: datos.fecha,
+                    cliente: tipoDocumento == 'OPERACIONES' ? datos.tipo.toUpperCase() : datos.razon_social,
+                    cantidad: 0, //
+                    unidad_medida: unidadMedidas[datos.id_unidadMedida], //
+                    id_documento: datos.id_documento
+                })
+            }
+
+            var resp = respuesta.find(e => e.id_documento == datos.id_documento)
+
+            if (tipoDocumento == 'OPERACIONES') {
+                if (datos.ajuste == 'positivo' && datos.id_cliente_ingreso == cliente) {
+                    resp.cantidad += datos.cantidad
+                }
+                if (datos.ajuste == 'negativo' && datos.id_cliente_egreso == cliente) {
+                    resp.cantidad -= datos.cantidad
+                }
+            } else {
+                if (datos.ajuste == 'positivo') {
+                    resp.cantidad += datos.cantidad
+                } else {
+                    resp.cantidad -= datos.cantidad
+                }
+            }
+        }
+
+        for (let articuloAsociado of articulosAsociados) {
+            //INGRESO
+            if (articuloAsociado.documento == 'ingreso' && articuloAsociado.id_cliente == cliente) {
+                agregarArticuloRespuesta('INGRESO', articuloAsociado)
+            }
+
+            //DEV. INGRESO
+            if (articuloAsociado.documento == 'ingreso_devolucion' && articuloAsociado.id_cliente == cliente) {
+                agregarArticuloRespuesta('DEV. INGRESO', articuloAsociado)
+            }
+
+            //REMITO
+            if (
+                articuloAsociado.documento == 'remito' &&
+                articuloAsociado.id_cliente == cliente &&
+                articuloAsociado.mercaderiaPropia
+            ) {
+                agregarArticuloRespuesta('REMITO', articuloAsociado)
+            }
+
+            //DEV. REMITO
+            if (
+                articuloAsociado.documento == 'remito_devolucion' &&
+                articuloAsociado.id_cliente == cliente &&
+                articuloAsociado.mercaderiaPropia
+            ) {
+                agregarArticuloRespuesta('DEV. REMITO', articuloAsociado)
+            }
+
+            //REMITO OTRO DESTINO
+            if (
+                articuloAsociado.documento == 'remito' &&
+                articuloAsociado.id_cliente != cliente &&
+                articuloAsociado.mercaderiaPropia
+            ) {
+                agregarArticuloRespuesta('REMITO OTRO DESTINO', articuloAsociado)
+            }
+
+            //DEV. REMITO OTRO DEST
+            if (
+                articuloAsociado.documento == 'remito_devolucion' &&
+                articuloAsociado.id_cliente != cliente &&
+                articuloAsociado.mercaderiaPropia
+            ) {
+                agregarArticuloRespuesta('DEV. REMITO OTRO DEST', articuloAsociado)
+            }
+
+            //REMITO OTRO ORIGEN
+            if (
+                articuloAsociado.documento == 'remito' &&
+                articuloAsociado.id_cliente == cliente &&
+                !articuloAsociado.mercaderiaPropia
+            ) {
+                agregarArticuloRespuesta('REMITO OTRO ORIGEN', articuloAsociado)
+            }
+
+            //DEV. REMITO OTRO ORIGEN
+            if (
+                articuloAsociado.documento == 'remito_devolucion' &&
+                articuloAsociado.id_cliente == cliente &&
+                !articuloAsociado.mercaderiaPropia
+            ) {
+                agregarArticuloRespuesta('DEV. REMITO OTRO ORIGEN', articuloAsociado)
+            }
+
+            //OPERACIONES
+            if (
+                articuloAsociado.documento == 'operaciones' &&
+                (articuloAsociado.id_cliente_ingreso == cliente || articuloAsociado.id_cliente_egreso == cliente)
+            ) {
+                agregarArticuloRespuesta('OPERACIONES', articuloAsociado)
+            }
+        }
+
+        res.status(200).json({
+            ok: true,
+            mensaje: respuesta
+        })
+    }
+    catch (err) {
+        res.status(500).json({
+            ok: false,
+            mensaje: err,
+            id: ''
+        })
+    }
+});
+
 router.get('/', async (req, res) => {
 
     log.info('GET movimientos por articulos')
@@ -1025,15 +1327,15 @@ router.get('/', async (req, res) => {
                 estado: 1,
                 id_articulo: articulo,
                 id_documento: {
-                    [Op.in]: [ ...INGRESOS.map(e => e.dataValues.id), ...DEVOLUCIONES.map(e => e.dataValues.id), ...REMITOS.map(e => e.dataValues.id), ...REMITOS_DEVOLUCIONES.map(e => e.dataValues.id), ...OPERACIONES.map(e => e.dataValues.id), ]
+                    [Op.in]: [...INGRESOS.map(e => e.dataValues.id), ...DEVOLUCIONES.map(e => e.dataValues.id), ...REMITOS.map(e => e.dataValues.id), ...REMITOS_DEVOLUCIONES.map(e => e.dataValues.id), ...OPERACIONES.map(e => e.dataValues.id),]
                 }
             }
         })
 
         const buscarDocumento = async (artAsoc) => {
             let datosDocumento = undefined
-            if(artAsoc.documento == 'ingreso') {
-                if(INGRESOS.some(e => e.dataValues.id == artAsoc.id_documento)){
+            if (artAsoc.documento == 'ingreso') {
+                if (INGRESOS.some(e => e.dataValues.id == artAsoc.id_documento)) {
                     datosDocumento = INGRESOS.find(e => e.dataValues.id == artAsoc.id_documento)
                 } else {
                     datosDocumento = await Ingreso.findOne({
@@ -1044,8 +1346,8 @@ router.get('/', async (req, res) => {
                     })
                 }
             }
-            if(artAsoc.documento == 'ingreso_devolucion') {
-                if(DEVOLUCIONES.some(e => e.dataValues.id == artAsoc.id_documento)){
+            if (artAsoc.documento == 'ingreso_devolucion') {
+                if (DEVOLUCIONES.some(e => e.dataValues.id == artAsoc.id_documento)) {
                     datosDocumento = DEVOLUCIONES.find(e => e.dataValues.id == artAsoc.id_documento)
                 } else {
                     datosDocumento = await Devolucion.findOne({
@@ -1056,8 +1358,8 @@ router.get('/', async (req, res) => {
                     })
                 }
             }
-            if(artAsoc.documento == 'operaciones') {
-                if(OPERACIONES.some(e => e.dataValues.id == artAsoc.id_documento)){
+            if (artAsoc.documento == 'operaciones') {
+                if (OPERACIONES.some(e => e.dataValues.id == artAsoc.id_documento)) {
                     datosDocumento = OPERACIONES.find(e => e.dataValues.id == artAsoc.id_documento)
                 } else {
                     datosDocumento = await Operaciones.findOne({
@@ -1068,8 +1370,8 @@ router.get('/', async (req, res) => {
                     })
                 }
             }
-            if(artAsoc.documento == 'remito') {
-                if(REMITOS.some(e => e.dataValues.id == artAsoc.id_documento)){
+            if (artAsoc.documento == 'remito') {
+                if (REMITOS.some(e => e.dataValues.id == artAsoc.id_documento)) {
                     datosDocumento = REMITOS.find(e => e.dataValues.id == artAsoc.id_documento)
                 } else {
                     datosDocumento = await Egresos.findOne({
@@ -1080,8 +1382,8 @@ router.get('/', async (req, res) => {
                     })
                 }
             }
-            if(artAsoc.documento == 'remito_devolucion') {
-                if(REMITOS_DEVOLUCIONES.some(e => e.dataValues.id == artAsoc.id_documento)){
+            if (artAsoc.documento == 'remito_devolucion') {
+                if (REMITOS_DEVOLUCIONES.some(e => e.dataValues.id == artAsoc.id_documento)) {
                     datosDocumento = REMITOS_DEVOLUCIONES.find(e => e.dataValues.id == artAsoc.id_documento)
                 } else {
                     datosDocumento = await RemitoDevolucion.findOne({
@@ -1096,39 +1398,54 @@ router.get('/', async (req, res) => {
             return datosDocumento ? datosDocumento.dataValues : datosDocumento
         }
 
-        const verificarMercaderiaPropia = async (artAsoc, documento) => {
-            //si no tiene id original, es un ingreso. Por lo tanto es propia
-            if(!artAsoc.id_original){
-                return true
-            }
-
-            //buscamos articuloOriginal en memoria, sino en DB
-            var articuloOriginal = {}
-            if(ArticulosAsociados.some(e => e.dataValues.id == artAsoc.id_original)){
-                articuloOriginal = ArticulosAsociados.find(e => e.dataValues.id == artAsoc.id_original)
-            } else {
-                articuloOriginal = await ArticuloAsociado.findOne({
-                    where: {
-                        estado: 1,
-                        id: artAsoc.id_original
-                    }
-                })
-            }
-
-            //buscamos el documento del articuloOriginal
-            var documentoOriginal = buscarDocumento(articuloOriginal)
-
-            if(articuloOriginal.dataValues.documento == 'operaciones'){
-                return documentoOriginal.id_cliente_ingreso == cliente
-            } else {
-                return documentoOriginal.id_cliente == cliente
-            }
-        }
-
         let articulosAsociados = []
         for (let artAsoc of ArticulosAsociados) {
 
+            let dueno = ''
+            let retira_ingresa = ''
             const documento = await buscarDocumento(artAsoc.dataValues)
+
+            //QUIEN RETIRA O INGRESA LA MERCADERIA
+            if (artAsoc.dataValues.documento != 'operaciones') {
+                retira_ingresa = documento.razon_social
+            } else {
+                if (artAsoc.dataValues.ajuste == 'positivo') {
+                    retira_ingresa = documento.razon_social_ingreso
+                } else {
+                    retira_ingresa = documento.razon_social_egreso
+                }
+            }
+
+            //QUIEN ES EL DUEÑO DE LA MERCADERIA
+            if (!artAsoc.id_original) {
+                dueno = retira_ingresa
+            } else {
+                var articuloOriginal = ArticulosAsociados.find(e => e.dataValues.id == artAsoc.id_original) || await ArticuloAsociado.findOne({ where: { estado: 1, id: artAsoc.id_original } })
+
+                //Buscamos el documento del articuloOriginal
+                var documentoOriginal = await buscarDocumento(articuloOriginal.dataValues)
+
+                if (articuloOriginal.dataValues.documento != 'operaciones') {
+                    dueno = documentoOriginal.razon_social
+                } else {
+                    //Si no es una operacion, si o si es un ingreso
+                    dueno = documentoOriginal.razon_social_ingreso
+                }
+            }
+
+
+            let articuloAsociado = {
+                tipo: artAsoc.dataValues.documento, //ingreso //ingreso_devolucion //remito //remito_devolucion //operaciones
+                numero: mostrarDocumento(documento.punto, documento.numero),
+                fecha: documento.fecha,
+
+                dueno: dueno,
+                retira_ingresa: retira_ingresa,
+                cantidad: 0,
+
+                unidad_medida: unidadMedidas[datos.id_unidadMedida], //
+                id_documento: documento.id
+            }
 
             const mercaderiaPropia = await verificarMercaderiaPropia(artAsoc.dataValues, documento)
 
@@ -1151,15 +1468,15 @@ router.get('/', async (req, res) => {
 
             var resp = respuesta.find(e => e.id_documento == datos.id_documento)
 
-            if(tipoDocumento == 'OPERACIONES'){
-                if(datos.ajuste == 'positivo' && datos.id_cliente_ingreso == cliente){
+            if (tipoDocumento == 'OPERACIONES') {
+                if (datos.ajuste == 'positivo' && datos.id_cliente_ingreso == cliente) {
                     resp.cantidad += datos.cantidad
                 }
-                if(datos.ajuste == 'negativo' && datos.id_cliente_egreso == cliente){
+                if (datos.ajuste == 'negativo' && datos.id_cliente_egreso == cliente) {
                     resp.cantidad -= datos.cantidad
                 }
             } else {
-                if(datos.ajuste == 'positivo'){
+                if (datos.ajuste == 'positivo') {
                     resp.cantidad += datos.cantidad
                 } else {
                     resp.cantidad -= datos.cantidad
@@ -1169,74 +1486,74 @@ router.get('/', async (req, res) => {
 
         for (let articuloAsociado of articulosAsociados) {
             //INGRESO
-            if(articuloAsociado.documento == 'ingreso' && articuloAsociado.id_cliente == cliente){
+            if (articuloAsociado.documento == 'ingreso' && articuloAsociado.id_cliente == cliente) {
                 agregarArticuloRespuesta('INGRESO', articuloAsociado)
             }
 
             //DEV. INGRESO
-            if(articuloAsociado.documento == 'ingreso_devolucion' && articuloAsociado.id_cliente == cliente){
+            if (articuloAsociado.documento == 'ingreso_devolucion' && articuloAsociado.id_cliente == cliente) {
                 agregarArticuloRespuesta('DEV. INGRESO', articuloAsociado)
             }
 
             //REMITO
-            if(
-                articuloAsociado.documento == 'remito' && 
+            if (
+                articuloAsociado.documento == 'remito' &&
                 articuloAsociado.id_cliente == cliente &&
                 articuloAsociado.mercaderiaPropia
-            ){
+            ) {
                 agregarArticuloRespuesta('REMITO', articuloAsociado)
             }
 
             //DEV. REMITO
-            if(
-                articuloAsociado.documento == 'remito_devolucion' && 
+            if (
+                articuloAsociado.documento == 'remito_devolucion' &&
                 articuloAsociado.id_cliente == cliente &&
                 articuloAsociado.mercaderiaPropia
-            ){
+            ) {
                 agregarArticuloRespuesta('DEV. REMITO', articuloAsociado)
             }
 
             //REMITO OTRO DESTINO
-            if(
-                articuloAsociado.documento == 'remito' && 
+            if (
+                articuloAsociado.documento == 'remito' &&
                 articuloAsociado.id_cliente != cliente &&
                 articuloAsociado.mercaderiaPropia
-            ){
+            ) {
                 agregarArticuloRespuesta('REMITO OTRO DESTINO', articuloAsociado)
             }
 
             //DEV. REMITO OTRO DEST
-            if(
-                articuloAsociado.documento == 'remito_devolucion' && 
+            if (
+                articuloAsociado.documento == 'remito_devolucion' &&
                 articuloAsociado.id_cliente != cliente &&
                 articuloAsociado.mercaderiaPropia
-            ){
+            ) {
                 agregarArticuloRespuesta('DEV. REMITO OTRO DEST', articuloAsociado)
             }
 
             //REMITO OTRO ORIGEN
-            if(
-                articuloAsociado.documento == 'remito' && 
+            if (
+                articuloAsociado.documento == 'remito' &&
                 articuloAsociado.id_cliente == cliente &&
                 !articuloAsociado.mercaderiaPropia
-            ){
+            ) {
                 agregarArticuloRespuesta('REMITO OTRO ORIGEN', articuloAsociado)
             }
 
             //DEV. REMITO OTRO ORIGEN
-            if(
-                articuloAsociado.documento == 'remito_devolucion' && 
+            if (
+                articuloAsociado.documento == 'remito_devolucion' &&
                 articuloAsociado.id_cliente == cliente &&
                 !articuloAsociado.mercaderiaPropia
-            ){
+            ) {
                 agregarArticuloRespuesta('DEV. REMITO OTRO ORIGEN', articuloAsociado)
             }
 
             //OPERACIONES
-            if(
-                articuloAsociado.documento == 'operaciones' && 
+            if (
+                articuloAsociado.documento == 'operaciones' &&
                 (articuloAsociado.id_cliente_ingreso == cliente || articuloAsociado.id_cliente_egreso == cliente)
-            ){
+            ) {
                 agregarArticuloRespuesta('OPERACIONES', articuloAsociado)
             }
         }
@@ -1254,5 +1571,4 @@ router.get('/', async (req, res) => {
         })
     }
 });
-
 module.exports = router;

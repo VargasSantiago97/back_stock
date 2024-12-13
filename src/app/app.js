@@ -43,7 +43,7 @@ const pdf_devoluciones = require('./../routes/pdf/devolucion.routes');
 const pdf_remitoDevoluciones = require('./../routes/pdf/remitoDevolucion.routes');
 const pdf_operaciones = require('./../routes/pdf/operacion.routes');
 
-const xlsx_ingresos = require('./../routes/xlsx/ingresos.routes');
+const xlsx = require('./../routes/xlsx/xlsx.routes');
 
 
 const login = require('./../validations/login');
@@ -87,7 +87,7 @@ app.use('/pdf/devoluciones', usersVerifyToken, pdf_devoluciones);
 app.use('/pdf/remitoDevoluciones', usersVerifyToken, pdf_remitoDevoluciones);
 app.use('/pdf/operaciones', usersVerifyToken, pdf_operaciones);
 
-app.use('/xlsx/ingresos', usersVerifyToken, xlsx_ingresos);
+app.use('/xlsx', usersVerifyToken, xlsx);
 
 
 app.get('/version', (req, res) => {
