@@ -4,6 +4,7 @@ const fs = require('fs');
 
 const ExcelJS = require('exceljs');
 const Ingresos = require('../../model/ingresos.model');
+const Operaciones = require('../../model/operaciones.model');
 const ArticuloAsociado = require('../../model/articulosAsociados.model');
 const UnidadMedidas = require('../../model/unidadMedidas.model');
 const Rubros = require('../../model/rubros.model');
@@ -396,7 +397,7 @@ router.post('/ingresos/detalles', async (req, res) => {
         worksheet.getCell('A' + fila_titulos).font = { bold: true, alignment: { horizontal: 'center' } }
         worksheet.getCell('G' + fila_titulos).font = { bold: true, alignment: { horizontal: 'center' } }
 
-        if(documento.tipo == 'DEVOLUCION'){
+        if (documento.tipo == 'DEVOLUCION') {
             worksheet.getCell('C' + fila_titulos).font = { bold: true, color: { argb: 'FFFF2222' } }
         }
         worksheet.getCell('E' + fila_titulos).font = { alignment: { horizontal: 'center' } }
@@ -668,12 +669,12 @@ router.post('/ingresos/datos', async (req, res) => {
             }
         })
 
-        const articulosAsociados = resultado.map(articuloAsociado =>  articuloAsociado.dataValues );
+        const articulosAsociados = resultado.map(articuloAsociado => articuloAsociado.dataValues);
 
-        for (const articulosAsociado of articulosAsociados){
+        for (const articulosAsociado of articulosAsociados) {
             var dueno = documento.razon_social
 
-            if(articulosAsociado.id_original){
+            if (articulosAsociado.id_original) {
                 const artOr = await ArticuloAsociado.findOne({
                     where: {
                         estado: 1,
@@ -681,7 +682,7 @@ router.post('/ingresos/datos', async (req, res) => {
                     }
                 })
 
-                if(artOr.documento == 'ingreso'){
+                if (artOr.documento == 'ingreso') {
                     const docOr = await Ingresos.findOne({
                         where: {
                             estado: 1,
@@ -691,7 +692,14 @@ router.post('/ingresos/datos', async (req, res) => {
 
                     dueno = docOr.razon_social
                 } else if (artOr.documento == 'operaciones') {
+                    const docOr = await Operaciones.findOne({
+                        where: {
+                            estado: 1,
+                            id: artOr.id_documento
+                        }
+                    })
 
+                    dueno = docOr.razon_social_ingreso
                 }
             }
 
@@ -1045,7 +1053,7 @@ router.post('/remitos/detalles', async (req, res) => {
         worksheet.getCell('A' + fila_titulos).font = { bold: true, alignment: { horizontal: 'center' } }
         worksheet.getCell('G' + fila_titulos).font = { bold: true, alignment: { horizontal: 'center' } }
 
-        if(documento.tipo == 'DEVOLUCION'){
+        if (documento.tipo == 'DEVOLUCION') {
             worksheet.getCell('C' + fila_titulos).font = { bold: true, color: { argb: 'FFFF2222' } }
         }
         worksheet.getCell('E' + fila_titulos).font = { alignment: { horizontal: 'center' } }
@@ -1317,12 +1325,12 @@ router.post('/remitos/datos', async (req, res) => {
             }
         })
 
-        const articulosAsociados = resultado.map(articuloAsociado =>  articuloAsociado.dataValues );
+        const articulosAsociados = resultado.map(articuloAsociado => articuloAsociado.dataValues);
 
-        for (const articulosAsociado of articulosAsociados){
+        for (const articulosAsociado of articulosAsociados) {
             var dueno = documento.razon_social
 
-            if(articulosAsociado.id_original){
+            if (articulosAsociado.id_original) {
                 const artOr = await ArticuloAsociado.findOne({
                     where: {
                         estado: 1,
@@ -1330,7 +1338,7 @@ router.post('/remitos/datos', async (req, res) => {
                     }
                 })
 
-                if(artOr.documento == 'ingreso'){
+                if (artOr.documento == 'ingreso') {
                     const docOr = await Ingresos.findOne({
                         where: {
                             estado: 1,
@@ -1340,7 +1348,14 @@ router.post('/remitos/datos', async (req, res) => {
 
                     dueno = docOr.razon_social
                 } else if (artOr.documento == 'operaciones') {
+                    const docOr = await Operaciones.findOne({
+                        where: {
+                            estado: 1,
+                            id: artOr.id_documento
+                        }
+                    })
 
+                    dueno = docOr.razon_social_ingreso
                 }
             }
 
@@ -1705,7 +1720,7 @@ router.post('/operaciones/detalles', async (req, res) => {
             '',
             'N° ' + mostrarDocumento(documento.punto, documento.numero),
             '',
-            `EGRESOS DE: ${documento.razon_social_egreso} (${documento.cuit_egreso}) - INGRESOS DE: ${documento.razon_social_ingreso} (${documento.cuit_ingreso})`
+            `EGRESOS DE: ${documento.razon_social_egreso} (${documento.cuit_egreso})`
         ]);
 
         var fila_titulos = worksheet.lastRow.number
@@ -1716,11 +1731,24 @@ router.post('/operaciones/detalles', async (req, res) => {
         worksheet.getCell('A' + fila_titulos).font = { bold: true, alignment: { horizontal: 'center' } }
         worksheet.getCell('G' + fila_titulos).font = { bold: true, alignment: { horizontal: 'center' } }
 
-        if(documento.tipo == 'DEVOLUCION'){
+        if (documento.tipo == 'DEVOLUCION') {
             worksheet.getCell('C' + fila_titulos).font = { bold: true, color: { argb: 'FFFF2222' } }
         }
         worksheet.getCell('E' + fila_titulos).font = { alignment: { horizontal: 'center' } }
 
+
+
+        worksheet.addRow([
+            '',
+            '',
+            '',
+            '',
+            '',
+            '',
+            `INGRESOS DE: ${documento.razon_social_ingreso} (${documento.cuit_ingreso})`
+        ]);
+        var fila_ingresosDe = worksheet.lastRow.number
+        worksheet.getCell('G' + fila_ingresosDe).font = { bold: true, alignment: { horizontal: 'center' } }
 
         const resultado = await ArticuloAsociado.findAll({
             where: {
@@ -1785,14 +1813,14 @@ router.post('/operaciones/detalles', async (req, res) => {
             const fila = worksheet.lastRow.number
 
             const row = worksheet.getRow(fila);
-            if(articulosAsociado.ajuste == 'positivo'){
+            if (articulosAsociado.ajuste == 'positivo') {
                 row.eachCell((cell) => {
                     cell.style = tableCellStyle;
                 });
 
                 const cellE = worksheet.getCell('E' + fila);
                 cellE.style = tableNumerStyle
-    
+
                 const cellH = worksheet.getCell('H' + fila);
                 cellH.style = tableNumerStyle
             } else {
@@ -1802,7 +1830,7 @@ router.post('/operaciones/detalles', async (req, res) => {
 
                 const cellE = worksheet.getCell('E' + fila);
                 cellE.style = tableNumerStyleNegativo
-    
+
                 const cellH = worksheet.getCell('H' + fila);
                 cellH.style = tableNumerStyleNegativo
             }
@@ -1909,7 +1937,7 @@ router.post('/operaciones/datos', async (req, res) => {
 
     // Crea un nuevo workbook y worksheet
     const workbook = new ExcelJS.Workbook();
-    const worksheet = workbook.addWorksheet('REMITOS Y DEVOLUCIONES');
+    const worksheet = workbook.addWorksheet('OPERACIONES');
 
     // Estilo para el encabezado de la tabla
     const headerStyle = {
@@ -1935,18 +1963,15 @@ router.post('/operaciones/datos', async (req, res) => {
         "TIPO",
         "PUNTO",
         "NUMERO",
-        "COD CLIENTE",
-        "RAZON SOCIAL",
-        "AUTORIZADO",
-        "TRANSPORTE",
-        "CHOFER",
-        "PAT. CH",
-        "PAT. AC",
-        "ESTABLECIMIENTO",
+        "COD CLIENTE EGRESO",
+        "RAZON SOCIAL EGRESO",
+        "CUIT EGRESO",
+        "COD CLIENTE INGRESO",
+        "RAZON SOCIAL INGRESO",
+        "CUIT INGRESO",
+
         "OBSERVACIONES",
         "OBS SISTEMA",
-        "TOTAL UNIDADES",
-        "DUEÑO",
         "RUBRO",
         "SUBRUBRO",
         "COD ARTICULO",
@@ -1976,51 +2001,23 @@ router.post('/operaciones/datos', async (req, res) => {
             }
         })
 
-        const articulosAsociados = resultado.map(articuloAsociado =>  articuloAsociado.dataValues );
+        const articulosAsociados = resultado.map(articuloAsociado => articuloAsociado.dataValues);
 
-        for (const articulosAsociado of articulosAsociados){
-            var dueno = documento.razon_social
-
-            if(articulosAsociado.id_original){
-                const artOr = await ArticuloAsociado.findOne({
-                    where: {
-                        estado: 1,
-                        id: articulosAsociado.id_original
-                    }
-                })
-
-                if(artOr.documento == 'ingreso'){
-                    const docOr = await Ingresos.findOne({
-                        where: {
-                            estado: 1,
-                            id: artOr.id_documento
-                        }
-                    })
-
-                    dueno = docOr.razon_social
-                } else if (artOr.documento == 'operaciones') {
-
-                }
-            }
-
+        for (const articulosAsociado of articulosAsociados) {
             worksheet.addRow([
                 documento.fecha,
                 documento.tipo,
                 documento.punto,
                 documento.numero,
-                documento.codigo,
-                documento.razon_social,
-                documento.autorizado_descripcion,
-                documento.transporte_transporte,
-                documento.transporte_chofer,
-                documento.transporte_patente_chasis,
-                documento.transporte_patente_acoplado,
-                documento.establecimiento_descripcion,
+                documento.codigo_egreso,
+                documento.razon_social_egreso,
+                documento.cuit_egreso,
+                documento.codigo_ingreso,
+                documento.razon_social_ingreso,
+                documento.cuit_ingreso,
+
                 documento.observaciones,
                 documento.observaciones_sistema,
-                documento.total_unidades,
-
-                dueno,
                 rubros[articulosAsociado.id_rubro] ? rubros[articulosAsociado.id_rubro] : articulosAsociado.id_rubro,
                 subrubros[articulosAsociado.id_subRubro] ? subrubros[articulosAsociado.id_subRubro] : articulosAsociado.id_subRubro,
                 articulosAsociado.codigo,

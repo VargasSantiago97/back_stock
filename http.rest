@@ -1,7 +1,7 @@
-GET http://localhost:3000/version HTTP/1.1
+GET http://localhost:3001/version HTTP/1.1
 
 ### GENERAR TOKEN
-POST http://localhost:3000/login HTTP/1.1
+POST http://localhost:3001/login HTTP/1.1
 Content-Type: application/json
 
 {
@@ -10,21 +10,21 @@ Content-Type: application/json
 }
 
 ###  OBTENER TODOS USERS
-GET http://localhost:3000/users
+GET http://localhost:3001/users
 Authorization: BEARER eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjoiYWRtaW4iLCJzdWIiOiIyZDljODNjZS1jYzM0LTQ2ZDgtOGZlOC1iOTUxZjJjMmIzZmUiLCJkZXNjcmlwY2lvbiI6IkFkbWluaXN0cmFkb3IiLCJwZXJtaXNvcyI6IntcInVzZXJzXCI6e1widmVyXCI6dHJ1ZSxcImNyZWFyXCI6dHJ1ZSxcImVkaXRhclwiOnRydWV9fSIsImV4cCI6MTcyNTk4NTA3NjE5OSwiaWF0IjoxNzI1OTc3ODc2fQ.mHbx0MXQcOMdqTkT0KCoFYDY1DFjkt3-qEuedqf4L48
 
 ### OBTENER UNO
-GET http://localhost:3000/users/fdfd50ca-bdca-4393-8a48-739aa9aa9638
+GET http://localhost:3001/users/fdfd50ca-bdca-4393-8a48-739aa9aa9638
 Authorization: BEARER eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjoiYWRtaW4iLCJzdWIiOiIyZDljODNjZS1jYzM0LTQ2ZDgtOGZlOC1iOTUxZjJjMmIzZmUiLCJkZXNjcmlwY2lvbiI6IkFkbWluaXN0cmFkb3IiLCJwZXJtaXNvcyI6IntcInVzZXJzXCI6e1widmVyXCI6dHJ1ZSxcImNyZWFyXCI6dHJ1ZSxcImVkaXRhclwiOnRydWV9fSIsImV4cCI6MTcyNTk4NTA3NjE5OSwiaWF0IjoxNzI1OTc3ODc2fQ.mHbx0MXQcOMdqTkT0KCoFYDY1DFjkt3-qEuedqf4L48
 
 ### CREAR NUEVO
-POST http://localhost:3000/users
+POST http://localhost:3001/users
 Content-Type: application/json
-Authorization: BEARER eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjoiYWRtaW4iLCJzdWIiOiIyZDljODNjZS1jYzM0LTQ2ZDgtOGZlOC1iOTUxZjJjMmIzZmUiLCJkZXNjcmlwY2lvbiI6IkFkbWluaXN0cmFkb3IiLCJwZXJtaXNvcyI6IntcInVzZXJzXCI6e1widmVyXCI6dHJ1ZSxcImNyZWFyXCI6dHJ1ZSxcImVkaXRhclwiOnRydWV9fSIsImV4cCI6MTcyNTk4NTA3NjE5OSwiaWF0IjoxNzI1OTc3ODc2fQ.mHbx0MXQcOMdqTkT0KCoFYDY1DFjkt3-qEuedqf4L48
+Authorization: BEARER eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjoiYWRtaW4iLCJzdWIiOiJkNzcwZmYxYy01NGNlLTRhOTQtOWY2ZC1jYzNiYTk4NTlkNzQiLCJkZXNjcmlwY2lvbiI6IkFkbWluaXN0cmFkb3IiLCJwZXJtaXNvcyI6IntcInVzZXJzXCI6e1widmVyXCI6dHJ1ZSxcImNyZWFyXCI6dHJ1ZSxcImVkaXRhclwiOnRydWV9fSIsImV4cCI6MTc0NzkyMzM5MTUyOCwiaWF0IjoxNzQ3OTE2MTkxfQ.L-HNCVWRE0hU4_EHyh5GlML63fbM1aYWTdVn76a5JEI
 
 {
-    "alias": "admin",
-    "descripcion": "Administrador",
+    "alias": "emma",
+    "descripcion": "Emmanuel",
     "password": "123456798",
     "email": "",
     "imagen": "",
@@ -39,7 +39,7 @@ Authorization: BEARER eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjoiYWRtaW4iL
 }
 
 ### EDITAR
-PUT http://localhost:3000/users/fdfd50ca-bdca-4393-8a48-739aa9aa9638 HTTP/1.1
+PUT http://localhost:3001/users/fdfd50ca-bdca-4393-8a48-739aa9aa9638 HTTP/1.1
 Content-Type: application/json
 Authorization: BEARER eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjoiYWRtaW4iLCJzdWIiOiIyZDljODNjZS1jYzM0LTQ2ZDgtOGZlOC1iOTUxZjJjMmIzZmUiLCJkZXNjcmlwY2lvbiI6IkFkbWluaXN0cmFkb3IiLCJwZXJtaXNvcyI6IntcInVzZXJzXCI6e1widmVyXCI6dHJ1ZSxcImNyZWFyXCI6dHJ1ZSxcImVkaXRhclwiOnRydWV9fSIsImV4cCI6MTcyNTk4NTA3NjE5OSwiaWF0IjoxNzI1OTc3ODc2fQ.mHbx0MXQcOMdqTkT0KCoFYDY1DFjkt3-qEuedqf4L48
 
@@ -59,22 +59,22 @@ Authorization: BEARER eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjoiYWRtaW4iL
 }
 
 ### ELIMINAR UNO
-DELETE http://localhost:3000/users/c48dd867-a86b-40e7-a04a-2a8e37dc64e5
+DELETE http://localhost:3001/users/c48dd867-a86b-40e7-a04a-2a8e37dc64e5
 Authorization: BEARER eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjoiYWRtaW4iLCJzdWIiOiIyZDljODNjZS1jYzM0LTQ2ZDgtOGZlOC1iOTUxZjJjMmIzZmUiLCJkZXNjcmlwY2lvbiI6IkFkbWluaXN0cmFkb3IiLCJwZXJtaXNvcyI6IntcInVzZXJzXCI6e1widmVyXCI6dHJ1ZSxcImNyZWFyXCI6dHJ1ZSxcImVkaXRhclwiOnRydWV9fSIsImV4cCI6MTcyNTk4NTA3NjE5OSwiaWF0IjoxNzI1OTc3ODc2fQ.mHbx0MXQcOMdqTkT0KCoFYDY1DFjkt3-qEuedqf4L48
 
 
 
 
 ###  CLIENTES - OBTENER TODOS
-GET http://localhost:3000/clientes
+GET http://localhost:3001/clientes
 Authorization: BEARER eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjoiYWRtaW4iLCJzdWIiOiIyZDljODNjZS1jYzM0LTQ2ZDgtOGZlOC1iOTUxZjJjMmIzZmUiLCJkZXNjcmlwY2lvbiI6IkFkbWluaXN0cmFkb3IiLCJwZXJtaXNvcyI6IntcInVzZXJzXCI6e1widmVyXCI6dHJ1ZSxcImNyZWFyXCI6dHJ1ZSxcImVkaXRhclwiOnRydWV9fSIsImV4cCI6MTcyNTk4NTA3NjE5OSwiaWF0IjoxNzI1OTc3ODc2fQ.mHbx0MXQcOMdqTkT0KCoFYDY1DFjkt3-qEuedqf4L48
 
 ###  CLIENTE - OBTENER
-GET http://localhost:3000/clientes/bf59d0c1-f9d5-48cc-bd67-ce6f329414bb
+GET http://localhost:3001/clientes/bf59d0c1-f9d5-48cc-bd67-ce6f329414bb
 Authorization: BEARER eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjoiYWRtaW4iLCJzdWIiOiIyZDljODNjZS1jYzM0LTQ2ZDgtOGZlOC1iOTUxZjJjMmIzZmUiLCJkZXNjcmlwY2lvbiI6IkFkbWluaXN0cmFkb3IiLCJwZXJtaXNvcyI6IntcInVzZXJzXCI6e1widmVyXCI6dHJ1ZSxcImNyZWFyXCI6dHJ1ZSxcImVkaXRhclwiOnRydWV9fSIsImV4cCI6MTcyNTk4NTA3NjE5OSwiaWF0IjoxNzI1OTc3ODc2fQ.mHbx0MXQcOMdqTkT0KCoFYDY1DFjkt3-qEuedqf4L48
 
 ### Crear cliente
-POST http://localhost:3000/clientes
+POST http://localhost:3001/clientes
 Content-Type: application/json
 Authorization: BEARER eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjoiYWRtaW4iLCJzdWIiOiIyZDljODNjZS1jYzM0LTQ2ZDgtOGZlOC1iOTUxZjJjMmIzZmUiLCJkZXNjcmlwY2lvbiI6IkFkbWluaXN0cmFkb3IiLCJwZXJtaXNvcyI6IntcInVzZXJzXCI6e1widmVyXCI6dHJ1ZSxcImNyZWFyXCI6dHJ1ZSxcImVkaXRhclwiOnRydWV9fSIsImV4cCI6MTcyNTk4NTA3NjE5OSwiaWF0IjoxNzI1OTc3ODc2fQ.mHbx0MXQcOMdqTkT0KCoFYDY1DFjkt3-qEuedqf4L48
 
@@ -94,7 +94,7 @@ Authorization: BEARER eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjoiYWRtaW4iL
 }
 
 ### Editar cliente
-PUT http://localhost:3000/clientes/c1a9c137-a2c8-44b7-8c89-b022769a04f1
+PUT http://localhost:3001/clientes/c1a9c137-a2c8-44b7-8c89-b022769a04f1
 Content-Type: application/json
 Authorization: BEARER eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjoiYWRtaW4iLCJzdWIiOiIyZDljODNjZS1jYzM0LTQ2ZDgtOGZlOC1iOTUxZjJjMmIzZmUiLCJkZXNjcmlwY2lvbiI6IkFkbWluaXN0cmFkb3IiLCJwZXJtaXNvcyI6IntcInVzZXJzXCI6e1widmVyXCI6dHJ1ZSxcImNyZWFyXCI6dHJ1ZSxcImVkaXRhclwiOnRydWV9fSIsImV4cCI6MTcyNTk4NTA3NjE5OSwiaWF0IjoxNzI1OTc3ODc2fQ.mHbx0MXQcOMdqTkT0KCoFYDY1DFjkt3-qEuedqf4L48
 
@@ -117,5 +117,5 @@ Authorization: BEARER eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjoiYWRtaW4iL
 
 
 ###  OBTENER TODOS USERS
-GET http://localhost:3000/articulos/buscar/descripcion/soja
+GET http://localhost:3001/articulos/buscar/descripcion/soja
 Authorization: BEARER eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjoiYWRtaW4iLCJzdWIiOiIyZDljODNjZS1jYzM0LTQ2ZDgtOGZlOC1iOTUxZjJjMmIzZmUiLCJkZXNjcmlwY2lvbiI6IkFkbWluaXN0cmFkb3IiLCJwZXJtaXNvcyI6IntcInVzZXJzXCI6e1widmVyXCI6dHJ1ZSxcImNyZWFyXCI6dHJ1ZSxcImVkaXRhclwiOnRydWV9fSIsImV4cCI6MTcyNTk4NTA3NjE5OSwiaWF0IjoxNzI1OTc3ODc2fQ.mHbx0MXQcOMdqTkT0KCoFYDY1DFjkt3-qEuedqf4L48
